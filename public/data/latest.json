@@ -1,0 +1,34 @@
+{
+  "services": [
+    {
+      "slug": "sofa-cleaning",
+      "name": "Sofa Cleaning",
+      "description": "Deep cleaning for all types of sofas. Removes stains, odors, and allergens for a fresh, clean living space.",
+      "price": 89
+    },
+    {
+      "slug": "mattress-cleaning",
+      "name": "Mattress Cleaning",
+      "description": "Professional mattress sanitization and deep cleaning for a healthier sleep environment.",
+      "price": 75
+    },
+    {
+      "slug": "chair-cleaning",
+      "name": "Chair Cleaning",
+      "description": "Individual chair cleaning service. Perfect for dining chairs, office chairs, and recliners.",
+      "price": 25
+    },
+    {
+      "slug": "rug-cleaning",
+      "name": "Small Rug Cleaning",
+      "description": "Thorough cleaning for area rugs up to 5x8 feet. Restores colors and removes embedded dirt.",
+      "price": 45
+    },
+    {
+      "slug": "pressure-washing",
+      "name": "Pressure Washing",
+      "description": "High-pressure cleaning for patios, driveways, sidewalks, and exterior surfaces.",
+      "price": 150
+    }
+  ]
+}
