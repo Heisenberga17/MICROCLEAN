@@ -1,147 +1,213 @@
-// Setup HTM with React
+// Configuration
+const WHATSAPP_NUMBER = '5215512345678';
+const PHONE_NUMBER = '+525512345678';
+const WHATSAPP_MESSAGE = 'Hola, me gustaría solicitar una cotización para servicio de limpieza';
+
+// HTM Setup
 const html = htm.bind(React.createElement);
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
-// ============================================
-// COMPONENTS
-// ============================================
+// Service data with actual repo images
+const servicesData = [
+    {
+        id: 'sofa',
+        name: 'Limpieza de Sofás',
+        description: 'Limpieza profunda y desinfección de sofás y sillones',
+        icon: '🛋️',
+        image: 'Sofa.jpg',
+        price: 'Desde $299'
+    },
+    {
+        id: 'mattress',
+        name: 'Limpieza de Colchones',
+        description: 'Eliminación de ácaros, manchas y olores en colchones',
+        icon: '🛏️',
+        image: 'Cama.jpg',
+        price: 'Desde $249'
+    },
+    {
+        id: 'tips',
+        name: 'Tips de Limpieza',
+        description: 'Consejos profesionales para mantener tus muebles',
+        icon: '💡',
+        image: 'Tips.jpg',
+        price: 'Gratis'
+    },
+    {
+        id: 'promo',
+        name: 'Promociones',
+        description: 'Descuentos especiales y paquetes',
+        icon: '🏷️',
+        image: 'Promo.jpg',
+        price: 'Ver ofertas'
+    },
+    {
+        id: 'user',
+        name: 'Servicio Personalizado',
+        description: 'Cotización a medida para tus necesidades',
+        icon: '👤',
+        image: 'User.jpg',
+        price: 'Cotizar'
+    },
+    {
+        id: 'pressure',
+        name: 'Lavado a Presión',
+        description: 'Limpieza de exteriores y superficies duras',
+        icon: '💦',
+        image: 'antrd_y_despues.jpg',
+        price: 'Desde $399'
+    }
+];
 
-// Mobile Menu Component
-function MobileMenu({ isOpen, toggleMenu }) {
-    return html`
-        <div class="mobile-menu ${isOpen ? 'active' : ''}">
-            <button class="menu-toggle" onClick=${toggleMenu}>
-                ${isOpen ? '✕' : '☰'}
-            </button>
-            ${isOpen && html`
-                <nav class="mobile-nav">
-                    <a href="#home" onClick=${toggleMenu}>Home</a>
-                    <a href="#services" onClick=${toggleMenu}>Services</a>
-                    <a href="#gallery" onClick=${toggleMenu}>Gallery</a>
-                    <a href="#contact" onClick=${toggleMenu}>Contact</a>
-                </nav>
-            `}
-        </div>
-    `;
-}
+// Gallery pairs from repo
+const galleryPairs = [
+    {
+        before: 'antes_silla1.jpg',
+        after: 'despues_silla1.jpg',
+        label: 'Limpieza de Sillas',
+        category: 'silla'
+    },
+    {
+        before: 'antes_cama1.jpg',
+        after: 'despues_cama1.jpg',
+        label: 'Limpieza de Colchones',
+        category: 'cama'
+    }
+];
 
-// Header Component
-function Header() {
-    const [scrolled, setScrolled] = useState(false);
+// Components
+function Header({ scrolled }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 50);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+    
+    const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
+    
+    const scrollToSection = useCallback((e, sectionId) => {
+        e.preventDefault();
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+        setMobileMenuOpen(false);
     }, []);
 
     return html`
         <header class="${scrolled ? 'scrolled' : ''}">
-            <div class="header-content">
-                <div class="logo">
-                    <span class="logo-icon">💧</span>
-                    <span class="logo-text">MicroClean</span>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo-wrapper">
+                        <img 
+                            src="/public/images/MicroClean_Main.jpg" 
+                            alt="MicroClean" 
+                            class="logo"
+                            onError=${(e) => {
+                                e.target.style.display = 'none';
+                                console.warn('Logo not found: MicroClean_Main.jpg');
+                            }}
+                        />
+                        <span class="logo-text">MicroClean</span>
+                    </div>
+                    
+                    <nav class="desktop-nav">
+                        <a href="#services" onClick=${(e) => scrollToSection(e, 'services')}>Servicios</a>
+                        <a href="#gallery" onClick=${(e) => scrollToSection(e, 'gallery')}>Galería</a>
+                        <a href="#contact" onClick=${(e) => scrollToSection(e, 'contact')}>Contacto</a>
+                        <a href="tel:${PHONE_NUMBER}" class="call-btn">
+                            <span class="icon">📞</span>
+                            Llamar Ahora
+                        </a>
+                    </nav>
+                    
+                    <button 
+                        class="mobile-menu-toggle ${mobileMenuOpen ? 'active' : ''}"
+                        onClick=${toggleMenu}
+                        aria-label="Menú"
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                 </div>
                 
-                <!-- Desktop Navigation -->
-                <nav class="desktop-nav">
-                    <a href="#services">Services</a>
-                    <a href="#gallery">Gallery</a>
-                    <a href="#contact">Contact</a>
-                    <a href="tel:555-123-4567" class="call-btn">Call Now</a>
-                </nav>
-                
-                <!-- Mobile Menu -->
-                <${MobileMenu} 
-                    isOpen=${mobileMenuOpen} 
-                    toggleMenu=${() => setMobileMenuOpen(!mobileMenuOpen)}
-                />
+                ${mobileMenuOpen && html`
+                    <nav class="mobile-nav">
+                        <a href="#services" onClick=${(e) => scrollToSection(e, 'services')}>Servicios</a>
+                        <a href="#gallery" onClick=${(e) => scrollToSection(e, 'gallery')}>Galería</a>
+                        <a href="#contact" onClick=${(e) => scrollToSection(e, 'contact')}>Contacto</a>
+                        <a href="tel:${PHONE_NUMBER}" class="mobile-call-btn">
+                            <span class="icon">📞</span>
+                            Llamar Ahora
+                        </a>
+                    </nav>
+                `}
             </div>
         </header>
     `;
 }
 
-// Hero Component
-function Hero() {
-    const [visible, setVisible] = useState(false);
-    
-    useEffect(() => {
-        setTimeout(() => setVisible(true), 100);
-    }, []);
-
-    return html`
-        <section id="home" class="hero ${visible ? 'visible' : ''}">
-            <div class="hero-content">
-                <h1>Professional Cleaning Services</h1>
-                <p>Transform your spaces with our expert cleaning solutions</p>
-                <div class="hero-buttons">
-                    <a href="#services" class="btn btn-primary">View Services</a>
-                    <a href="tel:555-123-4567" class="btn btn-secondary">Call Now</a>
-                </div>
-            </div>
-            <div class="hero-image"></div>
-        </section>
-    `;
-}
-
-// Service Card Component
-function ServiceCard({ service, imagePath }) {
+function ServiceCard({ service, onClick }) {
+    const [imageLoaded, setImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
     
+    const imagePath = `/public/images/services/${service.image}`;
+    
     return html`
-        <div class="service-card">
-            ${!imageError && imagePath && html`
-                <img 
-                    class="service-image"
-                    src=${imagePath}
-                    alt=${service.name}
-                    loading="lazy"
-                    onError=${() => setImageError(true)}
-                />
-            `}
-            ${(imageError || !imagePath) && html`
-                <div class="service-placeholder">
-                    <span class="placeholder-icon">🧹</span>
-                </div>
-            `}
-            <div class="service-info">
+        <div class="service-card" onClick=${() => onClick(service)}>
+            <div class="service-image-wrapper">
+                ${!imageError ? html`
+                    <img 
+                        src=${imagePath}
+                        alt=${service.name}
+                        class="service-image ${imageLoaded ? 'loaded' : ''}"
+                        onLoad=${() => setImageLoaded(true)}
+                        onError=${() => {
+                            setImageError(true);
+                            console.warn('Service image not found:', service.image);
+                        }}
+                        loading="lazy"
+                    />
+                ` : html`
+                    <div class="service-placeholder">
+                        <span class="service-icon">${service.icon}</span>
+                    </div>
+                `}
+            </div>
+            <div class="service-content">
                 <h3>${service.name}</h3>
                 <p>${service.description}</p>
-                <div class="price-container">
-                    <span class="price">$${service.price}</span>
-                    <span class="price-unit">USD</span>
+                <div class="service-footer">
+                    <span class="service-price">${service.price}</span>
+                    <button class="service-btn">Ver más</button>
                 </div>
-                <button class="book-btn" onClick=${() => handleBooking(service)}>
-                    Book Now
-                </button>
             </div>
         </div>
     `;
 }
 
-// Services Component
-function Services({ services, assets }) {
-    const getImagePath = (slug) => {
-        const filename = assets[slug];
-        return filename ? `/public/images/services/${filename}` : null;
-    };
+function Services({ services }) {
+    const handleServiceClick = useCallback((service) => {
+        const contactSection = document.getElementById('contact');
+        if (contactSection) {
+            contactSection.scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                const messageField = document.querySelector('textarea[name="message"]');
+                if (messageField) {
+                    messageField.value = `Me interesa el servicio: ${service.name}`;
+                    messageField.focus();
+                }
+            }, 500);
+        }
+    }, []);
 
     return html`
         <section id="services" class="services">
             <div class="container">
                 <div class="section-header">
-                    <h2>Our Services</h2>
-                    <p>Professional cleaning solutions for every need</p>
+                    <h2>Nuestros Servicios</h2>
+                    <p>Tapicería, colchones, sillas, alfombras y más. Servicio a domicilio disponible.</p>
                 </div>
-                <div class="service-grid">
+                <div class="services-grid">
                     ${services.map(service => html`
-                        <${ServiceCard}
-                            key=${service.slug}
-                            service=${service}
-                            imagePath=${getImagePath(service.slug)}
+                        <${ServiceCard} 
+                            key=${service.id} 
+                            service=${service} 
+                            onClick=${handleServiceClick}
                         />
                     `)}
                 </div>
@@ -150,76 +216,125 @@ function Services({ services, assets }) {
     `;
 }
 
-// Before/After Comparison Component
-function BeforeAfterCard({ item, getImagePath }) {
+function BeforeAfterSlider({ pair }) {
     const [position, setPosition] = useState(50);
+    const [isDragging, setIsDragging] = useState(false);
     const containerRef = useRef(null);
+    const [imagesLoaded, setImagesLoaded] = useState({ before: false, after: false });
+    const [imageErrors, setImageErrors] = useState({ before: false, after: false });
     
-    const handleMove = (e) => {
+    const beforePath = `/public/images/gallery/${pair.before}`;
+    const afterPath = `/public/images/gallery/${pair.after}`;
+    
+    const handleMove = useCallback((clientX) => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
-        const x = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-        const pos = ((x - rect.left) / rect.width) * 100;
-        setPosition(Math.min(Math.max(pos, 0), 100));
-    };
-
+        const x = clientX - rect.left;
+        const percentage = (x / rect.width) * 100;
+        setPosition(Math.min(Math.max(percentage, 0), 100));
+    }, []);
+    
+    const handleMouseMove = useCallback((e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        handleMove(e.clientX);
+    }, [isDragging, handleMove]);
+    
+    const handleTouchMove = useCallback((e) => {
+        if (!isDragging) return;
+        handleMove(e.touches[0].clientX);
+    }, [isDragging, handleMove]);
+    
+    useEffect(() => {
+        if (isDragging) {
+            const handleMouseUp = () => setIsDragging(false);
+            document.addEventListener('mouseup', handleMouseUp);
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('touchend', handleMouseUp);
+            document.addEventListener('touchmove', handleTouchMove);
+            
+            return () => {
+                document.removeEventListener('mouseup', handleMouseUp);
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('touchend', handleMouseUp);
+                document.removeEventListener('touchmove', handleTouchMove);
+            };
+        }
+    }, [isDragging, handleMouseMove, handleTouchMove]);
+    
+    if (imageErrors.before || imageErrors.after) {
+        return null;
+    }
+    
     return html`
-        <div class="before-after-card">
-            <h3>${item.label}</h3>
+        <div class="before-after-slider">
+            <h3>${pair.label}</h3>
             <div 
-                class="comparison-container"
+                class="slider-container"
                 ref=${containerRef}
-                onMouseMove=${handleMove}
-                onTouchMove=${handleMove}
+                onMouseDown=${() => setIsDragging(true)}
+                onTouchStart=${() => setIsDragging(true)}
             >
-                <div class="comparison-image before">
-                    <img src=${getImagePath(item.before)} alt="Before" />
-                    <span class="label">Before</span>
+                <div class="slider-image before-image">
+                    <img 
+                        src=${beforePath}
+                        alt="Antes"
+                        onLoad=${() => setImagesLoaded(prev => ({ ...prev, before: true }))}
+                        onError=${() => {
+                            setImageErrors(prev => ({ ...prev, before: true }));
+                            console.warn('Before image not found:', pair.before);
+                        }}
+                    />
+                    <span class="slider-label before-label">Antes</span>
                 </div>
                 <div 
-                    class="comparison-image after"
-                    style=${{clipPath: `inset(0 ${100 - position}% 0 0)`}}
+                    class="slider-image after-image"
+                    style=${{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
                 >
-                    <img src=${getImagePath(item.after)} alt="After" />
-                    <span class="label">After</span>
+                    <img 
+                        src=${afterPath}
+                        alt="Después"
+                        onLoad=${() => setImagesLoaded(prev => ({ ...prev, after: true }))}
+                        onError=${() => {
+                            setImageErrors(prev => ({ ...prev, after: true }));
+                            console.warn('After image not found:', pair.after);
+                        }}
+                    />
+                    <span class="slider-label after-label">Después</span>
                 </div>
                 <div 
                     class="slider-handle"
-                    style=${{left: `${position}%`}}
+                    style=${{ left: `${position}%` }}
                 >
-                    <span>↔</span>
+                    <div class="handle-line"></div>
+                    <div class="handle-button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M8 9L5 12L8 15M16 9L19 12L16 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
     `;
 }
 
-// Gallery Component
-function Gallery({ assets }) {
-    const beforeAfter = [
-        { before: 'antes_silla1', after: 'despues_silla1', label: 'Chair Cleaning' },
-        { before: 'antes_cama1', after: 'despues_cama1', label: 'Mattress Cleaning' }
-    ];
-
-    const getImagePath = (key) => {
-        const filename = assets[key];
-        return filename ? `/public/images/gallery/${filename}` : '/public/images/placeholder.svg';
-    };
-
+function Gallery({ pairs }) {
+    const validPairs = useMemo(() => pairs.filter(pair => pair.before && pair.after), [pairs]);
+    
+    if (validPairs.length === 0) {
+        return null;
+    }
+    
     return html`
         <section id="gallery" class="gallery">
             <div class="container">
                 <div class="section-header">
-                    <h2>Before & After</h2>
-                    <p>See the MicroClean difference</p>
+                    <h2>Antes y Después</h2>
+                    <p>Resultados reales de nuestros servicios profesionales</p>
                 </div>
                 <div class="gallery-grid">
-                    ${beforeAfter.map(item => html`
-                        <${BeforeAfterCard}
-                            key=${item.label}
-                            item=${item}
-                            getImagePath=${getImagePath}
-                        />
+                    ${validPairs.map(pair => html`
+                        <${BeforeAfterSlider} key=${pair.label} pair=${pair} />
                     `)}
                 </div>
             </div>
@@ -227,94 +342,178 @@ function Gallery({ assets }) {
     `;
 }
 
-// Contact Component
-function Contact() {
+function ContactForm() {
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
+        email: '',
         service: '',
         message: ''
     });
-
-    const handleSubmit = (e) => {
+    const [sending, setSending] = useState(false);
+    const [success, setSuccess] = useState(false);
+    
+    const handleChange = useCallback((e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }, []);
+    
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
-        // Handle form submission
-        alert('Thank you! We will contact you soon.');
-        setFormData({ name: '', phone: '', service: '', message: '' });
-    };
-
-    const updateField = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-    };
-
+        setSending(true);
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        setSending(false);
+        setSuccess(true);
+        
+        // Reset form after success
+        setTimeout(() => {
+            setFormData({
+                name: '',
+                phone: '',
+                email: '',
+                service: '',
+                message: ''
+            });
+            setSuccess(false);
+        }, 3000);
+    }, [formData]);
+    
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+    
     return html`
         <section id="contact" class="contact">
             <div class="container">
                 <div class="section-header">
-                    <h2>Get In Touch</h2>
-                    <p>Book your cleaning service today</p>
+                    <h2>Contáctanos</h2>
+                    <p>Solicita tu cotización sin compromiso</p>
                 </div>
-                <div class="contact-grid">
+                
+                <div class="contact-content">
                     <div class="contact-info">
-                        <div class="info-item">
-                            <span class="icon">📧</span>
+                        <div class="info-card">
+                            <div class="info-icon">📍</div>
                             <div>
-                                <h4>Email</h4>
-                                <p>info@microclean.com</p>
+                                <h4>Cobertura</h4>
+                                <p>Toda la zona metropolitana</p>
+                                <p>Servicio a domicilio</p>
                             </div>
                         </div>
-                        <div class="info-item">
-                            <span class="icon">📱</span>
+                        
+                        <div class="info-card">
+                            <div class="info-icon">⏰</div>
                             <div>
-                                <h4>Phone</h4>
-                                <p>(555) 123-4567</p>
+                                <h4>Horario</h4>
+                                <p>Lunes a Viernes: 8:00 - 19:00</p>
+                                <p>Sábados: 9:00 - 15:00</p>
                             </div>
                         </div>
-                        <div class="info-item">
-                            <span class="icon">🕐</span>
+                        
+                        <div class="info-card">
+                            <div class="info-icon">✨</div>
                             <div>
-                                <h4>Hours</h4>
-                                <p>Mon-Fri: 8AM - 6PM</p>
-                                <p>Sat: 9AM - 4PM</p>
+                                <h4>Garantía</h4>
+                                <p>100% de satisfacción</p>
+                                <p>Productos ecológicos</p>
                             </div>
+                        </div>
+                        
+                        <div class="cta-buttons">
+                            <a 
+                                href=${whatsappUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="btn btn-whatsapp"
+                            >
+                                <span class="icon">💬</span>
+                                Cotiza por WhatsApp
+                            </a>
+                            <a 
+                                href="tel:${PHONE_NUMBER}"
+                                class="btn btn-call"
+                            >
+                                <span class="icon">📞</span>
+                                Llámanos
+                            </a>
                         </div>
                     </div>
+                    
                     <form class="contact-form" onSubmit=${handleSubmit}>
-                        <input
-                            type="text"
-                            placeholder="Your Name"
-                            value=${formData.name}
-                            onChange=${(e) => updateField('name', e.target.value)}
-                            required
-                        />
-                        <input
-                            type="tel"
-                            placeholder="Phone Number"
-                            value=${formData.phone}
-                            onChange=${(e) => updateField('phone', e.target.value)}
-                            required
-                        />
-                        <select
-                            value=${formData.service}
-                            onChange=${(e) => updateField('service', e.target.value)}
-                            required
-                        >
-                            <option value="">Select Service</option>
-                            <option value="sofa">Sofa Cleaning</option>
-                            <option value="mattress">Mattress Cleaning</option>
-                            <option value="chair">Chair Cleaning</option>
-                            <option value="rug">Rug Cleaning</option>
-                            <option value="pressure">Pressure Washing</option>
-                        </select>
-                        <textarea
-                            placeholder="Additional Details"
-                            value=${formData.message}
-                            onChange=${(e) => updateField('message', e.target.value)}
-                            rows="4"
-                        ></textarea>
-                        <button type="submit" class="btn btn-primary">
-                            Send Message
-                        </button>
+                        ${success ? html`
+                            <div class="success-message">
+                                <span class="success-icon">✅</span>
+                                <p>¡Mensaje enviado con éxito!</p>
+                                <p>Te contactaremos pronto.</p>
+                            </div>
+                        ` : html`
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        placeholder="Tu nombre"
+                                        value=${formData.name}
+                                        onChange=${handleChange}
+                                        required
+                                    />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        placeholder="Teléfono"
+                                        value=${formData.phone}
+                                        onChange=${handleChange}
+                                        required
+                                    />
+                                </div>
+                                
+                                <div class="form-group full-width">
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        placeholder="Correo electrónico (opcional)"
+                                        value=${formData.email}
+                                        onChange=${handleChange}
+                                    />
+                                </div>
+                                
+                                <div class="form-group full-width">
+                                    <select
+                                        name="service"
+                                        value=${formData.service}
+                                        onChange=${handleChange}
+                                        required
+                                    >
+                                        <option value="">Selecciona un servicio</option>
+                                        ${servicesData.map(service => html`
+                                            <option value=${service.id}>${service.name}</option>
+                                        `)}
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group full-width">
+                                    <textarea
+                                        name="message"
+                                        placeholder="Cuéntanos más detalles..."
+                                        value=${formData.message}
+                                        onChange=${handleChange}
+                                        rows="4"
+                                    ></textarea>
+                                </div>
+                                
+                                <button 
+                                    type="submit" 
+                                    class="btn btn-submit full-width"
+                                    disabled=${sending}
+                                >
+                                    ${sending ? 'Enviando...' : 'Enviar Mensaje'}
+                                </button>
+                            </div>
+                        `}
                     </form>
                 </div>
             </div>
@@ -322,127 +521,118 @@ function Contact() {
     `;
 }
 
-// Footer Component
 function Footer() {
     return html`
         <footer>
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <span class="logo-icon">💧</span>
-                        <span class="logo-text">MicroClean</span>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <img 
+                            src="/public/images/MicroClean_Compact.jpg" 
+                            alt="MicroClean" 
+                            class="footer-logo"
+                            onError=${(e) => {
+                                e.target.style.display = 'none';
+                                console.warn('Footer logo not found: MicroClean_Compact.jpg');
+                            }}
+                        />
+                        <p>Servicios profesionales de limpieza con los más altos estándares de calidad.</p>
+                        <div class="social-links">
+                            <a href="#" aria-label="Facebook">📘</a>
+                            <a href="#" aria-label="Instagram">📷</a>
+                            <a href="#" aria-label="WhatsApp">💬</a>
+                        </div>
                     </div>
-                    <p>Professional cleaning services you can trust</p>
-                </div>
-                <div class="footer-links">
-                    <h4>Quick Links</h4>
-                    <a href="#services">Services</a>
-                    <a href="#gallery">Gallery</a>
-                    <a href="#contact">Contact</a>
-                </div>
-                <div class="footer-social">
-                    <h4>Follow Us</h4>
-                    <div class="social-icons">
-                        <a href="#" aria-label="Facebook">📘</a>
-                        <a href="#" aria-label="Instagram">📷</a>
-                        <a href="#" aria-label="Twitter">🐦</a>
+                    
+                    <div class="footer-section">
+                        <h4>Servicios</h4>
+                        <ul>
+                            <li><a href="#services">Limpieza de Sofás</a></li>
+                            <li><a href="#services">Limpieza de Colchones</a></li>
+                            <li><a href="#services">Lavado a Presión</a></li>
+                            <li><a href="#services">Servicios Especiales</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Contacto Rápido</h4>
+                        <p>📞 ${PHONE_NUMBER}</p>
+                        <p>💬 WhatsApp disponible</p>
+                        <p>📧 info@microclean.mx</p>
                     </div>
                 </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2024 MicroClean. All rights reserved.</p>
+                
+                <div class="footer-bottom">
+                    <p>&copy; 2024 MicroClean. Todos los derechos reservados.</p>
+                </div>
             </div>
         </footer>
     `;
 }
 
-// ============================================
-// MAIN APP
-// ============================================
-
 function App() {
-    const [services, setServices] = useState([]);
-    const [assets, setAssets] = useState({});
+    const [scrolled, setScrolled] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    
     useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+        };
+        
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+    
+    useEffect(() => {
+        // Simulate data loading
+        const loadData = async () => {
+            try {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                setLoading(false);
+            } catch (err) {
+                console.error('Error loading data:', err);
+                setError('Error al cargar los datos');
+                setLoading(false);
+            }
+        };
+        
         loadData();
     }, []);
-
-    const loadData = async () => {
-        try {
-            const [servicesRes, assetsRes] = await Promise.all([
-                fetch('/public/data/latest.json'),
-                fetch('/public/data/assets.json')
-            ]);
-
-            if (!servicesRes.ok || !assetsRes.ok) {
-                throw new Error('Failed to load data');
-            }
-
-            const servicesData = await servicesRes.json();
-            const assetsData = await assetsRes.json();
-
-            setServices(servicesData.services || []);
-            setAssets(assetsData || {});
-            setLoading(false);
-        } catch (err) {
-            console.error('Error loading data:', err);
-            setError(err.message);
-            setLoading(false);
-        }
-    };
-
+    
     if (loading) {
         return html`
             <div class="loading-screen">
                 <div class="spinner"></div>
-                <p>Loading MicroClean...</p>
+                <p>Cargando MicroClean...</p>
             </div>
         `;
     }
-
+    
     if (error) {
         return html`
             <div class="error-screen">
-                <h2>Oops! Something went wrong</h2>
+                <h2>¡Oops! Algo salió mal</h2>
                 <p>${error}</p>
-                <button onClick=${loadData}>Try Again</button>
+                <button onClick=${() => window.location.reload()}>
+                    Intentar de nuevo
+                </button>
             </div>
         `;
     }
-
+    
     return html`
-        <${Header} />
-        <${Hero} />
-        <${Services} services=${services} assets=${assets} />
-        <${Gallery} assets=${assets} />
-        <${Contact} />
+        <${Header} scrolled=${scrolled} />
+        <main>
+            <${Services} services=${servicesData} />
+            <${Gallery} pairs=${galleryPairs} />
+            <${ContactForm} />
+        </main>
         <${Footer} />
     `;
 }
 
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
-
-function handleBooking(service) {
-    // Scroll to contact form
-    document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-    
-    // Pre-fill the service in the form if possible
-    const selectElement = document.querySelector('select');
-    if (selectElement) {
-        selectElement.value = service.slug.split('-')[0];
-    }
-}
-
-// ============================================
-// INITIALIZE APP
-// ============================================
-
-// Wait for DOM to be ready
+// Initialize
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
 } else {
