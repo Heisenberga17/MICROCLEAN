@@ -136,7 +136,7 @@
         });
     });
     
-    // Before/After Slider Functionality
+    // Before/After Slider Functionality (Original Implementation)
     const sliders = document.querySelectorAll('.before-after-container');
     
     sliders.forEach(container => {
@@ -146,62 +146,78 @@
         
         if (!handle || !afterImage || !wrapper) return;
         
+        let position = 50;
         let isDragging = false;
-        let currentPosition = 50;
         
         // Apply initial position
-        updateSliderPosition(currentPosition);
+        updateSliderPosition(position);
         
-        function updateSliderPosition(percent) {
-            const clampedPercent = Math.max(0, Math.min(100, percent));
-            handle.style.left = clampedPercent + '%';
-            afterImage.style.left = clampedPercent + '%';
-            afterImage.style.clipPath = `inset(0 0 0 ${clampedPercent}%)`;
+        function updateSliderPosition(pos) {
+            const clampedPos = Math.max(0, Math.min(100, pos));
+            position = clampedPos;
+            handle.style.left = position + '%';
+            // This is the key difference - clipPath on after-image to reveal it
+            afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
         }
         
-        function getPositionFromEvent(e) {
+        function handleMove(clientX) {
             const rect = wrapper.getBoundingClientRect();
-            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-            return (x / rect.width) * 100;
+            const x = clientX - rect.left;
+            const percentage = (x / rect.width) * 100;
+            updateSliderPosition(percentage);
         }
         
         // Mouse events
-        handle.addEventListener('mousedown', function(e) {
-            isDragging = true;
-            e.preventDefault();
-        });
-        
-        document.addEventListener('mousemove', function(e) {
+        function handleMouseMove(e) {
             if (!isDragging) return;
-            currentPosition = getPositionFromEvent(e);
-            updateSliderPosition(currentPosition);
+            e.preventDefault();
+            handleMove(e.clientX);
+        }
+        
+        function handleMouseUp() {
+            isDragging = false;
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        }
+        
+        handle.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            isDragging = true;
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
         });
         
-        document.addEventListener('mouseup', function() {
-            isDragging = false;
+        wrapper.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            isDragging = true;
+            handleMove(e.clientX);
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
         });
         
         // Touch events
+        function handleTouchMove(e) {
+            if (!isDragging) return;
+            handleMove(e.touches[0].clientX);
+        }
+        
+        function handleTouchEnd() {
+            isDragging = false;
+            document.removeEventListener('touchmove', handleTouchMove);
+            document.removeEventListener('touchend', handleTouchEnd);
+        }
+        
         handle.addEventListener('touchstart', function(e) {
             isDragging = true;
-            e.preventDefault();
+            document.addEventListener('touchmove', handleTouchMove);
+            document.addEventListener('touchend', handleTouchEnd);
         });
         
-        document.addEventListener('touchmove', function(e) {
-            if (!isDragging) return;
-            currentPosition = getPositionFromEvent(e);
-            updateSliderPosition(currentPosition);
-        });
-        
-        document.addEventListener('touchend', function() {
-            isDragging = false;
-        });
-        
-        // Click to position
-        wrapper.addEventListener('click', function(e) {
-            if (e.target === handle || handle.contains(e.target)) return;
-            currentPosition = getPositionFromEvent(e);
-            updateSliderPosition(currentPosition);
+        wrapper.addEventListener('touchstart', function(e) {
+            isDragging = true;
+            handleMove(e.touches[0].clientX);
+            document.addEventListener('touchmove', handleTouchMove);
+            document.addEventListener('touchend', handleTouchEnd);
         });
     });
     
