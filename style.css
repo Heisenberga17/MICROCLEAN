@@ -517,7 +517,7 @@ header.scrolled {
 }
 
 .after-image {
-    left: 50%;
+    clip-path: inset(0 50% 0 0);
 }
 
 .label {
