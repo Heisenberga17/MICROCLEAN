@@ -66,7 +66,7 @@
                 <a href="#servicios" class="mobile-nav-link">Servicios</a>
                 <a href="#galeria" class="mobile-nav-link">Galería</a>
                 <a href="#contacto" class="mobile-nav-link">Contacto</a>
-                <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotizaci%C3%B3n." 
+                <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotización." 
                    target="_blank" 
                    rel="noopener" 
                    class="mobile-nav-whatsapp">
@@ -136,15 +136,25 @@
         });
     });
     
-    // Before/After Slider Functionality (Original Implementation)
+    // Before/After Slider Functionality - Enhanced for proper image display
     const sliders = document.querySelectorAll('.before-after-container');
     
     sliders.forEach(container => {
         const handle = container.querySelector('.slider-handle');
         const afterImage = container.querySelector('.after-image');
         const wrapper = container.querySelector('.slider-wrapper');
+        const imagePair = container.querySelector('.image-pair');
         
         if (!handle || !afterImage || !wrapper) return;
+        
+        // Ensure images are properly sized
+        const images = imagePair.querySelectorAll('img');
+        images.forEach(img => {
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.display = 'block';
+        });
         
         let position = 50;
         let isDragging = false;
@@ -156,8 +166,8 @@
             const clampedPos = Math.max(0, Math.min(100, pos));
             position = clampedPos;
             handle.style.left = position + '%';
-            // This is the key difference - clipPath on after-image to reveal it
-            afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
+            // Use polygon clip-path for better browser compatibility and performance
+            afterImage.style.clipPath = `polygon(0 0, ${position}% 0, ${position}% 100%, 0 100%)`;
         }
         
         function handleMove(clientX) {
@@ -266,7 +276,7 @@
         function showFormSuccess() {
             const successDiv = document.createElement('div');
             successDiv.className = 'form-success';
-            successDiv.innerHTML = '✓ Redirigiendo a WhatsApp...';
+            successDiv.innerHTML = '✔ Redirigiendo a WhatsApp...';
             successDiv.style.cssText = `
                 position: fixed;
                 top: 100px;
@@ -291,12 +301,18 @@
         }
     }
     
-    // Lazy Load Images Enhancement
+    // Enhanced Lazy Load Images with proper sizing
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
+                    
+                    // Ensure image maintains aspect ratio while loading
+                    if (!img.style.aspectRatio && img.width && img.height) {
+                        img.style.aspectRatio = `${img.width} / ${img.height}`;
+                    }
+                    
                     if (img.dataset.src && !img.src) {
                         img.src = img.dataset.src;
                         img.removeAttribute('data-src');
@@ -305,6 +321,8 @@
                     observer.unobserve(img);
                 }
             });
+        }, {
+            rootMargin: '50px'
         });
         
         document.querySelectorAll('img[loading="lazy"]').forEach(img => {
@@ -312,7 +330,7 @@
         });
     }
     
-    // Add CSS animations
+    // Add CSS animations and image display fixes
     const style = document.createElement('style');
     style.textContent = `
         .mobile-nav {
@@ -382,6 +400,30 @@
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
+        }
+        
+        /* Ensure before/after images maintain aspect ratio */
+        .image-pair {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .before-image,
+        .after-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .before-image img,
+        .after-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
     `;
     document.head.appendChild(style);
