@@ -136,6 +136,30 @@
         });
     });
     
+    // Service Cards Expand/Collapse
+    const serviceCards = document.querySelectorAll('.service-card');
+    
+    serviceCards.forEach(card => {
+        const button = card.querySelector('.service-link');
+        
+        if (button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Toggle expanded state
+                const isExpanded = card.classList.contains('expanded');
+                
+                if (isExpanded) {
+                    card.classList.remove('expanded');
+                    button.textContent = 'Ver más';
+                } else {
+                    card.classList.add('expanded');
+                    button.textContent = 'Ver menos';
+                }
+            });
+        }
+    });
+    
     // Before/After Slider Functionality - Enhanced for proper image display
     const sliders = document.querySelectorAll('.before-after-container');
     
@@ -252,8 +276,9 @@
                 const services = {
                     'sofa': 'Limpieza de Sofás',
                     'colchon': 'Limpieza de Colchones',
-                    'presion': 'Lavado a Presión',
-                    'otro': 'Servicio Personalizado'
+                    'sillas': 'Limpieza de Sillas',
+                    'cuero': 'Limpieza de Cuero',
+                    'otro': 'Otro Servicio'
                 };
                 message += `Servicio: ${services[data.service] || data.service}\n`;
             }
