@@ -398,6 +398,16 @@ header.scrolled {
     box-shadow: var(--shadow-lg);
 }
 
+.service-card.expanded {
+    grid-column: span 1;
+}
+
+@media (min-width: 768px) {
+    .service-card.expanded {
+        transform: scale(1.02);
+    }
+}
+
 .service-image {
     width: 100%;
     height: 200px;
@@ -425,9 +435,52 @@ header.scrolled {
     color: var(--blue-2);
 }
 
-.service-content p {
+.service-content > p {
     margin-bottom: var(--space-md);
     font-size: 0.875rem;
+}
+
+.service-details {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.3s ease-in-out,
+                padding 0.3s ease-in-out;
+}
+
+.service-card.expanded .service-details {
+    max-height: 500px;
+    opacity: 1;
+    padding: var(--space-md) 0;
+}
+
+.service-details p {
+    margin-bottom: var(--space-md);
+    font-size: 0.9rem;
+    line-height: var(--line-height-relaxed);
+    color: var(--gray-600);
+}
+
+.service-details ul {
+    list-style: none;
+    padding: 0;
+}
+
+.service-details li {
+    position: relative;
+    padding-left: var(--space-lg);
+    margin-bottom: var(--space-sm);
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.service-details li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--blue-accent);
+    font-weight: bold;
 }
 
 .service-footer {
@@ -449,12 +502,24 @@ header.scrolled {
     padding: var(--space-xs) var(--space-md);
     border: 1px solid var(--blue-2);
     border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: pointer;
     transition: var(--transition);
 }
 
 .service-link:hover {
     background: var(--blue-2);
     color: var(--white);
+}
+
+.service-card.expanded .service-link {
+    background: var(--blue-2);
+    color: var(--white);
+}
+
+.service-card.expanded .service-link:hover {
+    background: var(--blue-1);
+    border-color: var(--blue-1);
 }
 
 /* Gallery Section */
@@ -472,6 +537,12 @@ header.scrolled {
 @media (min-width: 768px) {
     .gallery-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
