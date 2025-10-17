@@ -1,4 +1,4 @@
-// MicroClean Cotizador - COMPLETE FROM SCRATCH
+// MicroClean Cotizador - BUG-FREE, ULTRA DYNAMIC VERSION
 (function() {
     'use strict';
     
@@ -31,7 +31,7 @@
         }
     });
     
-    // ==================== ACORDEONES ====================
+    // ==================== ACORDEONES - BUG FREE ====================
     function inicializarAcordeones() {
         const categorias = document.querySelectorAll('.categoria-servicios');
         
@@ -40,29 +40,53 @@
             const content = categoria.querySelector('.categoria-content');
             
             if (header && content) {
+                // Click on header toggles accordion
                 header.addEventListener('click', function(e) {
-                    // Don't close if clicking inside service items
-                    if (e.target.closest('.servicio-item')) return;
-                    
-                    const isOpen = categoria.classList.contains('open');
-                    
-                    if (isOpen) {
-                        content.style.maxHeight = '0';
-                        categoria.classList.remove('open');
-                    } else {
-                        // Optional: Close other accordions
-                        // categorias.forEach(c => {
-                        //     if (c !== categoria) {
-                        //         c.classList.remove('open');
-                        //         c.querySelector('.categoria-content').style.maxHeight = '0';
-                        //     }
-                        // });
-                        
-                        content.style.maxHeight = content.scrollHeight + 'px';
-                        categoria.classList.add('open');
+                    // Don't toggle if clicking inside service items or their children
+                    if (e.target.closest('.servicio-item') || 
+                        e.target.closest('.btn-agregar') ||
+                        e.target.closest('input[type="range"]')) {
+                        return;
                     }
+                    
+                    toggleAccordion(categoria, content);
                 });
             }
+        });
+    }
+    
+    function toggleAccordion(categoria, content) {
+        const isOpen = categoria.classList.contains('open');
+        
+        if (isOpen) {
+            // Close accordion
+            content.style.maxHeight = '0';
+            categoria.classList.remove('open');
+        } else {
+            // Open accordion
+            categoria.classList.add('open');
+            updateAccordionHeight(content);
+        }
+    }
+    
+    function updateAccordionHeight(content) {
+        // Calculate full height including all children
+        const scrollHeight = content.scrollHeight;
+        content.style.maxHeight = scrollHeight + 'px';
+        
+        // Re-calculate after a short delay to catch any dynamic content
+        setTimeout(() => {
+            if (content.parentElement.classList.contains('open')) {
+                const newHeight = content.scrollHeight;
+                content.style.maxHeight = newHeight + 'px';
+            }
+        }, 100);
+    }
+    
+    function updateAllOpenAccordions() {
+        // Update height of all open accordions
+        document.querySelectorAll('.categoria-servicios.open .categoria-content').forEach(content => {
+            updateAccordionHeight(content);
         });
     }
     
@@ -149,7 +173,12 @@
             });
             
             slider.addEventListener('mousedown', e => e.stopPropagation());
-            slider.addEventListener('touchstart', e => e.stopPropagation());
+            slider.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+            
+            // Update accordion height when slider changes
+            slider.addEventListener('change', function() {
+                updateAllOpenAccordions();
+            });
         });
         
         return div;
@@ -159,24 +188,24 @@
     function toggleCardSelection(card) {
         const wasSelected = card.classList.contains('seleccionado');
         
-        // Deselect all cards
+        // Deselect all other cards
         document.querySelectorAll('.servicio-item').forEach(el => {
-            el.classList.remove('seleccionado');
+            if (el !== card) {
+                el.classList.remove('seleccionado');
+            }
         });
         
         // Toggle current card
         if (!wasSelected) {
             card.classList.add('seleccionado');
+        } else {
+            card.classList.remove('seleccionado');
         }
         
-        // Update accordion height
+        // Update accordion height after transition
         setTimeout(() => {
-            const categoria = card.closest('.categoria-servicios');
-            if (categoria && categoria.classList.contains('open')) {
-                const content = categoria.querySelector('.categoria-content');
-                content.style.maxHeight = content.scrollHeight + 'px';
-            }
-        }, 50);
+            updateAllOpenAccordions();
+        }, 100);
     }
     
     // ==================== UPDATE SLIDER ====================
@@ -286,14 +315,10 @@
         actualizarCarrito();
         divServicio.classList.remove('seleccionado');
         
-        // Update accordion height
+        // Update accordion height after feedback animation
         setTimeout(() => {
-            const categoria = divServicio.closest('.categoria-servicios');
-            if (categoria && categoria.classList.contains('open')) {
-                const content = categoria.querySelector('.categoria-content');
-                content.style.maxHeight = content.scrollHeight + 'px';
-            }
-        }, 50);
+            updateAllOpenAccordions();
+        }, 100);
     }
     
     // ==================== FEEDBACK AGREGADO ====================
@@ -306,7 +331,7 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
                 <path d="M5 13l4 4L19 7"/>
             </svg>
-            <span>Agregado</span>
+            <span>¡Agregado!</span>
         `;
         
         elemento.appendChild(feedback);
@@ -486,5 +511,10 @@
             }, 300);
         }, 3000);
     }
+    
+    // Update accordion heights on window resize
+    window.addEventListener('resize', function() {
+        updateAllOpenAccordions();
+    });
     
 })();
