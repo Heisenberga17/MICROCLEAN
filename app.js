@@ -1,4 +1,4 @@
-// MicroClean Premium JavaScript - Progressive Enhancement
+// MicroClean Premium JavaScript - Optimizado
 (function() {
     'use strict';
     
@@ -9,7 +9,6 @@
     // DOM References
     const header = document.getElementById('header');
     const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelectorAll('.nav-link');
     const yearSpan = document.getElementById('year');
     const contactForm = document.getElementById('contact-form');
     
@@ -18,28 +17,26 @@
         yearSpan.textContent = new Date().getFullYear();
     }
     
-    // Header Scroll Effect
+    // Header Scroll Effect (optimizado con requestAnimationFrame)
     let scrolled = false;
+    let ticking = false;
+    
     function handleScroll() {
         const shouldBeScrolled = window.scrollY > 50;
         if (shouldBeScrolled !== scrolled) {
             scrolled = shouldBeScrolled;
-            if (scrolled) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
+            header.classList.toggle('scrolled', scrolled);
         }
     }
     
-    // Throttled scroll handler
-    let scrollTimer;
     window.addEventListener('scroll', function() {
-        if (scrollTimer) return;
-        scrollTimer = setTimeout(function() {
-            scrollTimer = null;
-            handleScroll();
-        }, 10);
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                handleScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
     });
     
     // Mobile Menu Toggle
@@ -51,7 +48,6 @@
             this.classList.toggle('active', menuOpen);
             this.setAttribute('aria-expanded', menuOpen);
             
-            // Create/toggle mobile menu
             let mobileNav = document.querySelector('.mobile-nav');
             if (!mobileNav) {
                 mobileNav = createMobileNav();
@@ -78,7 +74,6 @@
             `;
             header.appendChild(nav);
             
-            // Add click handlers to close menu
             nav.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', function() {
                     menuOpen = false;
@@ -92,7 +87,7 @@
         }
     }
     
-    // Active Navigation Link on Scroll
+    // Active Navigation Link
     const sections = document.querySelectorAll('section[id]');
     
     function updateActiveNav() {
@@ -114,10 +109,19 @@
         });
     }
     
-    window.addEventListener('scroll', updateActiveNav);
+    let navTicking = false;
+    window.addEventListener('scroll', function() {
+        if (!navTicking) {
+            window.requestAnimationFrame(function() {
+                updateActiveNav();
+                navTicking = false;
+            });
+            navTicking = true;
+        }
+    });
     updateActiveNav();
     
-    // Smooth Scroll for Navigation Links
+    // Smooth Scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const href = this.getAttribute('href');
@@ -145,52 +149,33 @@
         if (button) {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
-                
-                // Toggle expanded state
                 const isExpanded = card.classList.contains('expanded');
-                
-                if (isExpanded) {
-                    card.classList.remove('expanded');
-                    button.textContent = 'Ver más';
-                } else {
-                    card.classList.add('expanded');
-                    button.textContent = 'Ver menos';
-                }
+                card.classList.toggle('expanded');
+                button.textContent = isExpanded ? 'Ver más' : 'Ver menos';
             });
         }
     });
     
-    // Before/After Slider Functionality - Enhanced for proper image display
+    // Before/After Slider - CORREGIDO
     const sliders = document.querySelectorAll('.before-after-container');
     
     sliders.forEach(container => {
         const handle = container.querySelector('.slider-handle');
         const afterImage = container.querySelector('.after-image');
         const wrapper = container.querySelector('.slider-wrapper');
-        const imagePair = container.querySelector('.image-pair');
         
         if (!handle || !afterImage || !wrapper) return;
-        
-        // Ensure images are properly sized
-        const images = imagePair.querySelectorAll('img');
-        images.forEach(img => {
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = 'cover';
-            img.style.display = 'block';
-        });
         
         let position = 50;
         let isDragging = false;
         
-        // Apply initial position
         updateSliderPosition(position);
         
         function updateSliderPosition(pos) {
             const clampedPos = Math.max(0, Math.min(100, pos));
             position = clampedPos;
             handle.style.left = position + '%';
-            // Use polygon clip-path for better browser compatibility and performance
+            // CORREGIDO: Ahora el clip-path va desde la izquierda hasta la posición
             afterImage.style.clipPath = `polygon(0 0, ${position}% 0, ${position}% 100%, 0 100%)`;
         }
         
@@ -202,56 +187,44 @@
         }
         
         // Mouse events
-        function handleMouseMove(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-            handleMove(e.clientX);
-        }
-        
-        function handleMouseUp() {
-            isDragging = false;
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        }
-        
         handle.addEventListener('mousedown', function(e) {
             e.preventDefault();
             isDragging = true;
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
         });
         
         wrapper.addEventListener('mousedown', function(e) {
             e.preventDefault();
             isDragging = true;
             handleMove(e.clientX);
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            handleMove(e.clientX);
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
         });
         
         // Touch events
-        function handleTouchMove(e) {
-            if (!isDragging) return;
-            handleMove(e.touches[0].clientX);
-        }
-        
-        function handleTouchEnd() {
-            isDragging = false;
-            document.removeEventListener('touchmove', handleTouchMove);
-            document.removeEventListener('touchend', handleTouchEnd);
-        }
-        
         handle.addEventListener('touchstart', function(e) {
             isDragging = true;
-            document.addEventListener('touchmove', handleTouchMove);
-            document.addEventListener('touchend', handleTouchEnd);
         });
         
         wrapper.addEventListener('touchstart', function(e) {
             isDragging = true;
             handleMove(e.touches[0].clientX);
-            document.addEventListener('touchmove', handleTouchMove);
-            document.addEventListener('touchend', handleTouchEnd);
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            if (!isDragging) return;
+            handleMove(e.touches[0].clientX);
+        });
+        
+        document.addEventListener('touchend', function() {
+            isDragging = false;
         });
     });
     
@@ -260,7 +233,6 @@
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Get form data
             const formData = new FormData(this);
             const data = {};
             formData.forEach((value, key) => {
@@ -274,10 +246,11 @@
             
             if (data.service) {
                 const services = {
-                    'sofa': 'Limpieza de Sofás',
-                    'colchon': 'Limpieza de Colchones',
-                    'sillas': 'Limpieza de Sillas',
-                    'cuero': 'Limpieza de Cuero',
+                    'tapiceria-tela': 'Tapicería en Tela',
+                    'tapiceria-cuero': 'Tapicería en Cuero',
+                    'limpieza-espacios': 'Limpieza de Espacios',
+                    'impermeabilizacion': 'Impermeabilización',
+                    'tratamiento-enzimatico': 'Tratamiento Enzimático',
                     'otro': 'Otro Servicio'
                 };
                 message += `Servicio: ${services[data.service] || data.service}\n`;
@@ -287,14 +260,10 @@
                 message += `Mensaje: ${data.message}\n`;
             }
             
-            // Open WhatsApp with message
             const whatsappUrl = `https://wa.me/50764177111?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
             
-            // Reset form
             this.reset();
-            
-            // Show success message
             showFormSuccess();
         });
         
@@ -320,30 +289,31 @@
             setTimeout(() => {
                 successDiv.style.animation = 'slideOut 0.3s ease';
                 setTimeout(() => {
-                    document.body.removeChild(successDiv);
+                    if (successDiv.parentNode) {
+                        document.body.removeChild(successDiv);
+                    }
                 }, 300);
             }, 3000);
         }
     }
     
-    // Enhanced Lazy Load Images with proper sizing
+    // Lazy Load Images - OPTIMIZADO
     if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
+        const imageObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
-                    
-                    // Ensure image maintains aspect ratio while loading
-                    if (!img.style.aspectRatio && img.width && img.height) {
-                        img.style.aspectRatio = `${img.width} / ${img.height}`;
-                    }
                     
                     if (img.dataset.src && !img.src) {
                         img.src = img.dataset.src;
                         img.removeAttribute('data-src');
                     }
-                    img.classList.add('loaded');
-                    observer.unobserve(img);
+                    
+                    img.addEventListener('load', function() {
+                        img.classList.add('loaded');
+                    });
+                    
+                    imageObserver.unobserve(img);
                 }
             });
         }, {
@@ -355,7 +325,7 @@
         });
     }
     
-    // Add CSS animations and image display fixes
+    // Add CSS animations
     const style = document.createElement('style');
     style.textContent = `
         .mobile-nav {
@@ -418,37 +388,13 @@
             }
         }
         
+        img {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
         img.loaded {
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        /* Ensure before/after images maintain aspect ratio */
-        .image-pair {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-        }
-        
-        .before-image,
-        .after-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .before-image img,
-        .after-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
+            opacity: 1;
         }
     `;
     document.head.appendChild(style);
