@@ -1,4 +1,4 @@
-// MicroClean - Fixed JavaScript
+// MicroClean
 (function() {
     'use strict';
     
