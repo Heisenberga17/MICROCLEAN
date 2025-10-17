@@ -435,13 +435,6 @@
         
         calcularYMostrarTotales();
         formularioSeccion.style.display = 'block';
-        
-        // Scroll to form on mobile
-        if (window.innerWidth < 1024) {
-            setTimeout(() => {
-                formularioSeccion.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 300);
-        }
     }
     
     // ==================== ELIMINAR DEL CARRITO ====================
