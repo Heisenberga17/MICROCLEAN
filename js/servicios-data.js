@@ -1,6 +1,4 @@
 // MicroClean - Catálogo de Servicios y Precios
-// Todos los precios en Balboas (B/.)
-
 const SERVICIOS_CATALOGO = {
   tapiceriaTela: {
     nombre: 'Tapicería en Tela',
@@ -85,7 +83,6 @@ const SERVICIOS_CATALOGO = {
   }
 };
 
-// Exportar para uso en otros módulos
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { SERVICIOS_CATALOGO };
 }
