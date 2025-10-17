@@ -1,0 +1,50 @@
+# Security and Performance Headers for MicroClean
+# Cloudflare Pages Configuration
+
+# All pages - Security & Performance headers
+/*
+  # Security Headers
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(self), microphone=(), camera=()
+
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://wa.me; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://wa.me; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://wa.me;
+
+  # HSTS - Cloudflare handles SSL automatically
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # Cache Control
+  Cache-Control: public, max-age=0, must-revalidate
+
+# CSS files - Cache for 30 days
+/*.css
+  Cache-Control: public, max-age=2592000, immutable
+
+# JavaScript files - Cache for 30 days
+/*.js
+  Cache-Control: public, max-age=2592000, immutable
+
+# Images - Cache for 1 year
+/public/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.gif
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
