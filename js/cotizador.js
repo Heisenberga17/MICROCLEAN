@@ -1,4 +1,4 @@
-// MicroClean Cotizador - BUG-FREE, ULTRA DYNAMIC VERSION
+// MicroClean Cotizador
 (function() {
     'use strict';
     
