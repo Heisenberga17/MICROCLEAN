@@ -178,6 +178,15 @@
                 button.textContent = isExpanded ? 'Ver más' : 'Ver menos';
             }
         });
+
+        // Remove hover state on touch devices after tap
+        if ('ontouchstart' in window) {
+            card.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    card.blur();
+                }, 300);
+            });
+        }
     });
     
     // ===== BEFORE/AFTER SLIDER - PERFECT VERSION =====
