@@ -182,26 +182,38 @@
         const afterImage = container.querySelector('.after-image');
         const beforeImage = container.querySelector('.before-image');
         const wrapper = container.querySelector('.slider-wrapper');
-        
+        const beforeLabel = beforeImage.querySelector('.label');
+        const afterLabel = afterImage.querySelector('.label');
+
         if (!handle || !afterImage || !wrapper || !beforeImage) return;
-        
+
         let position = 0; // Start at 0% (showing only BEFORE)
         let isDragging = false;
-        
+
         // Initial setup
         updateSliderPosition(position);
-        
+
         function updateSliderPosition(pos) {
             const clampedPos = Math.max(0, Math.min(100, pos));
             position = clampedPos;
-            
+
             // Move handle
             handle.style.left = position + '%';
-            
+
             // Clip the AFTER image to reveal it as we slide right
             // At 0%: after image is completely hidden (clip-path: inset(0 100% 0 0))
             // At 100%: after image is fully visible (clip-path: inset(0 0 0 0))
             afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
+
+            // Control label visibility
+            // Hide "Antes" label when slider is more than 20% to the right
+            // Show "Después" label when slider is more than 20% to the right
+            if (beforeLabel) {
+                beforeLabel.style.opacity = position > 20 ? '0' : '1';
+            }
+            if (afterLabel) {
+                afterLabel.style.opacity = position > 20 ? '1' : '0';
+            }
         }
         
         function getPosition(clientX) {
@@ -317,38 +329,46 @@
         }
     }
     
-    // ===== LAZY LOAD IMAGES =====
+    // ===== EAGER LOAD GALLERY IMAGES, LAZY LOAD OTHERS =====
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
-                    
+
                     // Load the image
                     if (img.dataset.src && !img.src) {
                         img.src = img.dataset.src;
                         img.removeAttribute('data-src');
                     }
-                    
-                    // Add loaded class after image loads
-                    if (img.complete) {
-                        img.classList.add('loaded');
-                    } else {
-                        img.addEventListener('load', function() {
+
+                    // Add loaded class after image loads (only for non-gallery images)
+                    if (!img.closest('.before-after-container')) {
+                        if (img.complete) {
                             img.classList.add('loaded');
-                        }, { once: true });
+                        } else {
+                            img.addEventListener('load', function() {
+                                img.classList.add('loaded');
+                            }, { once: true });
+                        }
                     }
-                    
+
                     imageObserver.unobserve(img);
                 }
             });
         }, {
             rootMargin: '50px'
         });
-        
-        // Observe all lazy images
+
+        // Observe all lazy images (excluding gallery images)
         document.querySelectorAll('img[loading="lazy"]').forEach(img => {
             imageObserver.observe(img);
+        });
+
+        // Immediately mark all gallery images as loaded
+        document.querySelectorAll('.before-after-container img').forEach(img => {
+            img.classList.add('loaded');
+            img.style.opacity = '1';
         });
     } else {
         // Fallback for browsers without IntersectionObserver
@@ -358,6 +378,12 @@
                 img.removeAttribute('data-src');
             }
             img.classList.add('loaded');
+        });
+
+        // Immediately mark all gallery images as loaded
+        document.querySelectorAll('.before-after-container img').forEach(img => {
+            img.classList.add('loaded');
+            img.style.opacity = '1';
         });
     }
     

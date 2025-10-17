@@ -487,12 +487,38 @@ header.scrolled {
     border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    will-change: transform;
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--radius-md);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    box-shadow: var(--shadow-xl);
+    z-index: -1;
 }
 
 .service-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.15), 0 8px 16px -4px rgba(9, 101, 198, 0.1);
+}
+
+.service-card:hover::before {
+    opacity: 1;
+}
+
+.service-card:active {
+    transform: translateY(-4px) scale(1.01);
 }
 
 .service-image {
@@ -500,31 +526,59 @@ header.scrolled {
     height: 200px;
     overflow: hidden;
     background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+    position: relative;
+}
+
+.service-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(9, 101, 198, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .service-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .service-card:hover .service-image img {
-    transform: scale(1.05);
+    transform: scale(1.1);
+}
+
+.service-card:hover .service-image::after {
+    opacity: 1;
 }
 
 .service-content {
     padding: var(--space-lg);
+    transition: background 0.3s ease;
+}
+
+.service-card:hover .service-content {
+    background: linear-gradient(to bottom, rgba(9, 101, 198, 0.02), transparent);
 }
 
 .service-content h3 {
     color: var(--blue-2);
     margin-bottom: var(--space-sm);
+    transition: color 0.3s ease;
+}
+
+.service-card:hover .service-content h3 {
+    color: var(--blue-1);
 }
 
 .service-content > p {
     font-size: 0.9375rem;
     color: var(--gray-600);
+    line-height: 1.6;
 }
 
 .service-details {
@@ -587,17 +641,36 @@ header.scrolled {
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--blue-2);
-    padding: var(--space-sm) var(--space-md);
-    border: 1px solid var(--blue-2);
+    padding: var(--space-sm) var(--space-lg);
+    border: 2px solid var(--blue-2);
     border-radius: var(--radius-sm);
     background: transparent;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.service-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--blue-2);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+    border-radius: var(--radius-sm);
 }
 
 .service-link:hover {
-    background: var(--blue-2);
     color: var(--white);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(9, 101, 198, 0.3);
+}
+
+.service-link:hover::before {
+    left: 0;
 }
 
 /* ==================== GALLERY (BEFORE/AFTER) - BIGGER & CLEARER ==================== */
@@ -649,22 +722,44 @@ header.scrolled {
 .image-pair {
     position: relative;
     width: 100%;
-    height: 0;
-    padding-bottom: 75%; /* 4:3 aspect ratio - taller for better visibility */
+    min-height: 300px;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Even larger on tablet and desktop */
-@media (min-width: 768px) {
+/* Portrait mobile - taller aspect ratio */
+@media (max-width: 767px) and (orientation: portrait) {
     .image-pair {
-        padding-bottom: 70%; /* Slightly taller on tablets */
+        aspect-ratio: 4 / 3;
+        min-height: 250px;
     }
 }
 
+/* Landscape mobile - wider aspect ratio */
+@media (max-width: 767px) and (orientation: landscape) {
+    .image-pair {
+        aspect-ratio: 21 / 9;
+        min-height: 200px;
+    }
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .image-pair {
+        aspect-ratio: 16 / 9;
+        min-height: 350px;
+    }
+}
+
+/* Desktop */
 @media (min-width: 1024px) {
     .image-pair {
-        padding-bottom: 65%; /* Maximum height on desktop for crystal clear images */
+        aspect-ratio: 21 / 9;
+        min-height: 400px;
     }
 }
 
@@ -675,6 +770,9 @@ header.scrolled {
     left: 0;
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .before-image img,
@@ -682,15 +780,20 @@ header.scrolled {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center center;
     display: block;
     pointer-events: none;
     user-select: none;
+    opacity: 1 !important;
+    transition: none;
 }
 
 /* AFTER image starts completely hidden */
 .after-image {
     clip-path: inset(0 100% 0 0);
     z-index: 2;
+    transition: clip-path 0.05s ease-out;
+    will-change: clip-path;
 }
 
 .label {
@@ -710,10 +813,13 @@ header.scrolled {
 
 .before-image .label {
     left: var(--space-lg);
+    transition: opacity 0.2s ease;
 }
 
 .after-image .label {
     right: var(--space-lg);
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 .slider-handle {
@@ -887,7 +993,11 @@ footer {
 .footer-logo {
     height: 80px;
     width: auto;
+    max-width: 150px;
     object-fit: contain;
+    background: transparent;
+    mix-blend-mode: multiply;
+    filter: brightness(0) invert(1);
 }
 
 .footer-brand p {
@@ -1039,6 +1149,8 @@ footer {
     user-select: none;
     background: var(--gray-50);
     transition: background 0.2s ease;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    overflow: hidden;
 }
 
 .categoria-header:hover {
@@ -1047,6 +1159,7 @@ footer {
 
 .categoria-servicios.open .categoria-header {
     background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .categoria-titulo {
@@ -1129,6 +1242,7 @@ footer {
     background: linear-gradient(to right, rgba(0, 180, 216, 0.05), rgba(9, 101, 198, 0.05));
     border-left: 4px solid var(--blue-2);
     padding-left: calc(var(--space-lg) - 4px);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 .servicio-item.seleccionado .servicio-controles {
@@ -1254,13 +1368,15 @@ input[type="range"]::-moz-range-thumb:hover {
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     margin-top: var(--space-md);
+    overflow: hidden;
+    position: relative;
 }
 
 .btn-agregar:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 8px 16px -4px rgba(7, 119, 182, 0.4), 0 4px 8px -2px rgba(9, 101, 198, 0.3);
 }
 
 .btn-agregar:active {
@@ -1745,6 +1861,19 @@ input[type="range"]::-moz-range-thumb:hover {
     .btn-submit,
     button {
         min-height: 44px;
+    }
+
+    /* Mobile-optimized service cards */
+    .service-card {
+        transition: all 0.2s ease;
+    }
+
+    .service-card:active {
+        transform: translateY(-2px) scale(0.99);
+    }
+
+    .service-image img {
+        transition: transform 0.4s ease;
     }
     
     /* Cotizador mobile */
