@@ -1,9 +1,10 @@
-// MicroClean Cotizador
+// MicroClean Cotizador - COMPLETE FROM SCRATCH
 (function() {
     'use strict';
     
     let carritoItems = [];
     
+    // DOM Elements
     const serviciosTela = document.getElementById('servicios-tela');
     const serviciosCuero = document.getElementById('servicios-cuero');
     const serviciosEspacios = document.getElementById('servicios-espacios');
@@ -13,6 +14,7 @@
     const formularioSeccion = document.getElementById('formulario-seccion');
     const formCotizacion = document.getElementById('form-cotizacion');
     
+    // Initialize
     document.addEventListener('DOMContentLoaded', function() {
         renderizarServicios();
         actualizarCarrito();
@@ -29,7 +31,7 @@
         }
     });
     
-    // ACORDEONES - FUNCIONAN PERFECTAMENTE
+    // ==================== ACORDEONES ====================
     function inicializarAcordeones() {
         const categorias = document.querySelectorAll('.categoria-servicios');
         
@@ -39,7 +41,7 @@
             
             if (header && content) {
                 header.addEventListener('click', function(e) {
-                    // Prevenir que clicks en elementos internos cierren el acordeón
+                    // Don't close if clicking inside service items
                     if (e.target.closest('.servicio-item')) return;
                     
                     const isOpen = categoria.classList.contains('open');
@@ -48,7 +50,7 @@
                         content.style.maxHeight = '0';
                         categoria.classList.remove('open');
                     } else {
-                        // Cerrar otros acordeones (opcional)
+                        // Optional: Close other accordions
                         // categorias.forEach(c => {
                         //     if (c !== categoria) {
                         //         c.classList.remove('open');
@@ -58,19 +60,13 @@
                         
                         content.style.maxHeight = content.scrollHeight + 'px';
                         categoria.classList.add('open');
-                        
-                        // Actualizar maxHeight cuando cambia el contenido
-                        setTimeout(() => {
-                            if (categoria.classList.contains('open')) {
-                                content.style.maxHeight = content.scrollHeight + 'px';
-                            }
-                        }, 100);
                     }
                 });
             }
         });
     }
     
+    // ==================== RENDER SERVICIOS ====================
     function renderizarServicios() {
         if (serviciosTela) {
             SERVICIOS_CATALOGO.tapiceriaTela.items.forEach(item => {
@@ -97,6 +93,7 @@
         }
     }
     
+    // ==================== CREATE SERVICE HTML ====================
     function crearServicioHTML(item, categoria) {
         const div = document.createElement('div');
         div.className = 'servicio-item';
@@ -113,7 +110,7 @@
         }
         
         div.innerHTML = `
-            <div class="servicio-header-item" data-selectable="true">
+            <div class="servicio-header-item">
                 <span class="servicio-nombre">${item.nombre}</span>
                 <span class="servicio-precio">${precioDisplay}</span>
             </div>
@@ -129,21 +126,21 @@
             </div>
         `;
         
-        // EVENTO AGREGAR - Sin problemas
+        // Event: Agregar
         const btnAgregar = div.querySelector('.btn-agregar');
         btnAgregar.addEventListener('click', function(e) {
             e.stopPropagation();
             agregarAlCarrito(item, categoria, div);
         });
         
-        // EVENTO SELECCIONAR CARD - Solo en el header
+        // Event: Click header to expand/collapse
         const headerItem = div.querySelector('.servicio-header-item');
         headerItem.addEventListener('click', function(e) {
             e.stopPropagation();
             toggleCardSelection(div);
         });
         
-        // EVENTOS SLIDERS - No cierran el card
+        // Event: Sliders
         const sliders = div.querySelectorAll('input[type="range"]');
         sliders.forEach(slider => {
             slider.addEventListener('input', function(e) {
@@ -151,39 +148,38 @@
                 actualizarValorSlider(this, div);
             });
             
-            slider.addEventListener('mousedown', function(e) {
-                e.stopPropagation();
-            });
-            
-            slider.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-            });
+            slider.addEventListener('mousedown', e => e.stopPropagation());
+            slider.addEventListener('touchstart', e => e.stopPropagation());
         });
         
         return div;
     }
     
+    // ==================== TOGGLE CARD SELECTION ====================
     function toggleCardSelection(card) {
-        const isSelected = card.classList.contains('seleccionado');
+        const wasSelected = card.classList.contains('seleccionado');
         
-        // Desseleccionar otros cards
+        // Deselect all cards
         document.querySelectorAll('.servicio-item').forEach(el => {
-            if (el !== card) el.classList.remove('seleccionado');
+            el.classList.remove('seleccionado');
         });
         
-        // Toggle actual
-        card.classList.toggle('seleccionado');
+        // Toggle current card
+        if (!wasSelected) {
+            card.classList.add('seleccionado');
+        }
         
-        // Actualizar altura del acordeón si está abierto
+        // Update accordion height
         setTimeout(() => {
             const categoria = card.closest('.categoria-servicios');
             if (categoria && categoria.classList.contains('open')) {
                 const content = categoria.querySelector('.categoria-content');
                 content.style.maxHeight = content.scrollHeight + 'px';
             }
-        }, 350); // Después de la animación del card
+        }, 50);
     }
     
+    // ==================== UPDATE SLIDER ====================
     function actualizarValorSlider(slider, card) {
         const controlType = slider.dataset.control;
         const valueDisplay = card.querySelector(`[data-type="${controlType}"]`);
@@ -199,6 +195,7 @@
         }
     }
     
+    // ==================== CREATE CONTROLS HTML ====================
     function crearControlesHTML(item) {
         if (item.tipo === 'cantidad') {
             return `
@@ -249,6 +246,7 @@
         return '';
     }
     
+    // ==================== AGREGAR AL CARRITO ====================
     function agregarAlCarrito(item, categoria, divServicio) {
         const controles = divServicio.querySelector('.servicio-controles');
         
@@ -276,6 +274,7 @@
             itemCarrito.subtotal = item.precio;
         }
         
+        // Check if item already exists
         const existeIndex = carritoItems.findIndex(ci => ci.id === item.id);
         if (existeIndex >= 0) {
             carritoItems[existeIndex] = itemCarrito;
@@ -287,17 +286,20 @@
         actualizarCarrito();
         divServicio.classList.remove('seleccionado');
         
-        // Actualizar altura del acordeón
+        // Update accordion height
         setTimeout(() => {
             const categoria = divServicio.closest('.categoria-servicios');
             if (categoria && categoria.classList.contains('open')) {
                 const content = categoria.querySelector('.categoria-content');
                 content.style.maxHeight = content.scrollHeight + 'px';
             }
-        }, 350);
+        }, 50);
     }
     
+    // ==================== FEEDBACK AGREGADO ====================
     function mostrarFeedbackAgregado(elemento) {
+        elemento.style.position = 'relative';
+        
         const feedback = document.createElement('div');
         feedback.className = 'feedback-agregado';
         feedback.innerHTML = `
@@ -316,6 +318,7 @@
         }, 1500);
     }
     
+    // ==================== ACTUALIZAR CARRITO ====================
     function actualizarCarrito() {
         if (carritoItems.length === 0) {
             carritoContenido.innerHTML = `
@@ -346,7 +349,7 @@
                 <div class="carrito-item">
                     <div class="carrito-item-header">
                         <strong>${item.nombre}</strong>
-                        <button class="btn-eliminar" data-index="${index}" type="button">
+                        <button class="btn-eliminar" data-index="${index}" type="button" aria-label="Eliminar">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M6 18L18 6M6 6l12 12"/>
                             </svg>
@@ -360,6 +363,7 @@
         
         carritoContenido.innerHTML = html;
         
+        // Event listeners for delete buttons
         document.querySelectorAll('.btn-eliminar').forEach(btn => {
             btn.addEventListener('click', function() {
                 const index = parseInt(this.dataset.index);
@@ -370,6 +374,7 @@
         calcularYMostrarTotales();
         formularioSeccion.style.display = 'block';
         
+        // Scroll to form on mobile
         if (window.innerWidth < 1024) {
             setTimeout(() => {
                 formularioSeccion.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -377,11 +382,13 @@
         }
     }
     
+    // ==================== ELIMINAR DEL CARRITO ====================
     function eliminarDelCarrito(index) {
         carritoItems.splice(index, 1);
         actualizarCarrito();
     }
     
+    // ==================== CALCULAR TOTALES ====================
     function calcularYMostrarTotales() {
         const subtotal = carritoItems.reduce((sum, item) => sum + item.subtotal, 0);
         const totalFinal = aplicarMinimoServicio(subtotal);
@@ -419,11 +426,10 @@
         carritoTotales.style.display = 'block';
     }
     
-    // WHATSAPP CORREGIDO - Mensaje más corto
+    // ==================== ENVIAR COTIZACIÓN WHATSAPP ====================
     function enviarCotizacionWhatsApp() {
         const formData = new FormData(formCotizacion);
         
-        // Mensaje CORTO para evitar problemas con URL larga
         let msg = `*COTIZACIÓN MICROCLEAN*\n\n`;
         msg += `👤 ${formData.get('nombre')}\n`;
         msg += `📱 ${formData.get('whatsapp')}\n`;
@@ -460,6 +466,7 @@
         mostrarMensajeExito();
     }
     
+    // ==================== MENSAJE ÉXITO ====================
     function mostrarMensajeExito() {
         const div = document.createElement('div');
         div.className = 'mensaje-exito';
