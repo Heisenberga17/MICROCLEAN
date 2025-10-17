@@ -84,7 +84,12 @@
             ${item.descripcion && item.tipo !== 'area' ? `<div style="font-size: 0.875rem; color: var(--gray-600); margin-top: 0.25rem;">${item.descripcion}</div>` : ''}
             <div class="servicio-controles">
                 ${crearControlesHTML(item)}
-                <button class="btn-agregar" data-id="${item.id}">Agregar al Carrito</button>
+                <button class="btn-agregar" data-id="${item.id}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Agregar al Carrito
+                </button>
             </div>
         `;
         
@@ -206,7 +211,12 @@
     // Feedback visual al agregar
     function mostrarFeedbackAgregado(elemento) {
         const feedback = document.createElement('div');
-        feedback.textContent = '✓ Agregado';
+        feedback.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <path d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>Agregado</span>
+        `;
         feedback.style.cssText = `
             position: absolute;
             top: 50%;
@@ -214,11 +224,15 @@
             transform: translate(-50%, -50%);
             background: var(--whatsapp);
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.25rem;
             border-radius: 8px;
             font-weight: 600;
             z-index: 10;
-            animation: fadeInOut 1s ease;
+            animation: fadeInOut 1.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-xl);
         `;
         
         elemento.style.position = 'relative';
@@ -228,7 +242,7 @@
             if (feedback.parentNode) {
                 feedback.parentNode.removeChild(feedback);
             }
-        }, 1000);
+        }, 1200);
     }
     
     // Actualizar vista del carrito
@@ -270,7 +284,7 @@
                         </button>
                     </div>
                     <div class="carrito-item-detalles">${detalles}</div>
-                    <div style="text-align: right; font-weight: 600; color: var(--blue-2); margin-top: 0.5rem;">
+                    <div style="text-align: right; font-weight: 700; color: var(--blue-2); margin-top: 0.5rem; font-size: 1.05rem;">
                         B/.${item.subtotal.toFixed(2)}
                     </div>
                 </div>
@@ -292,6 +306,13 @@
         
         // Mostrar formulario
         formularioSeccion.style.display = 'block';
+        
+        // Scroll suave al formulario en móvil
+        if (window.innerWidth < 1024) {
+            setTimeout(() => {
+                formularioSeccion.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 300);
+        }
     }
     
     // Eliminar item del carrito
@@ -314,7 +335,7 @@
         html += `
             <div class="total-linea">
                 <span>Subtotal:</span>
-                <span>B/.${subtotal.toFixed(2)}</span>
+                <span style="font-weight: 600;">B/.${subtotal.toFixed(2)}</span>
             </div>
         `;
         
@@ -322,7 +343,7 @@
             html += `
                 <div class="total-linea" style="color: var(--gray-600); font-size: 0.875rem;">
                     <span>Mínimo de servicio:</span>
-                    <span>B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)}</span>
+                    <span style="font-weight: 600;">B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)}</span>
                 </div>
             `;
         }
@@ -354,14 +375,14 @@
         const notas = formData.get('notas');
         
         // Construir mensaje
-        let mensaje = `*COTIZACIÓN MICROCLEAN*\n\n`;
+        let mensaje = `*COTIZACIÓN MICROCLEAN* 🧼✨\n\n`;
         mensaje += `*Datos del Cliente:*\n`;
-        mensaje += `Nombre: ${nombre}\n`;
-        mensaje += `WhatsApp: ${whatsapp}\n`;
-        mensaje += `Dirección: ${direccion}\n`;
+        mensaje += `👤 Nombre: ${nombre}\n`;
+        mensaje += `📱 WhatsApp: ${whatsapp}\n`;
+        mensaje += `📍 Dirección: ${direccion}\n`;
         
-        if (fecha) mensaje += `Fecha preferida: ${fecha}\n`;
-        if (horario) mensaje += `Horario preferido: ${horario}\n`;
+        if (fecha) mensaje += `📅 Fecha preferida: ${fecha}\n`;
+        if (horario) mensaje += `🕐 Horario preferido: ${horario}\n`;
         
         mensaje += `\n*Servicios Solicitados:*\n`;
         mensaje += `━━━━━━━━━━━━━━━━━━\n`;
@@ -370,14 +391,14 @@
             mensaje += `\n${index + 1}. *${item.nombre}*\n`;
             
             if (item.tipo === 'cantidad') {
-                mensaje += `   Cantidad: ${item.cantidad} ${item.unidad}\n`;
-                mensaje += `   Precio unitario: B/.${item.precio.toFixed(2)}\n`;
+                mensaje += `   📦 Cantidad: ${item.cantidad} ${item.unidad}\n`;
+                mensaje += `   💵 Precio unitario: B/.${item.precio.toFixed(2)}\n`;
             } else if (item.tipo === 'area') {
-                mensaje += `   Área: ${item.area} m²\n`;
-                mensaje += `   Precio por m²: B/.${item.precioM2.toFixed(2)}\n`;
+                mensaje += `   📐 Área: ${item.area} m²\n`;
+                mensaje += `   💵 Precio por m²: B/.${item.precioM2.toFixed(2)}\n`;
             }
             
-            mensaje += `   Subtotal: B/.${item.subtotal.toFixed(2)}\n`;
+            mensaje += `   💰 Subtotal: B/.${item.subtotal.toFixed(2)}\n`;
         });
         
         // Calcular totales (sin descuentos/promociones)
@@ -386,11 +407,11 @@
         
         mensaje += `\n━━━━━━━━━━━━━━━━━━\n`;
         mensaje += `Subtotal: B/.${subtotal.toFixed(2)}\n`;
-        mensaje += `\n*TOTAL: B/.${totalFinal.toFixed(2)}*\n`;
-        mensaje += `\n(Mínimo de servicio: B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)})\n`;
+        mensaje += `\n✅ *TOTAL: B/.${totalFinal.toFixed(2)}*\n`;
+        mensaje += `\n_(Mínimo de servicio: B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)})_\n`;
         
         if (notas) {
-            mensaje += `\n*Notas adicionales:*\n${notas}\n`;
+            mensaje += `\n*📝 Notas adicionales:*\n${notas}\n`;
         }
         
         mensaje += `\n━━━━━━━━━━━━━━━━━━\n`;
@@ -414,18 +435,18 @@
             right: 20px;
             background: var(--whatsapp);
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 8px;
+            padding: 1.25rem 2rem;
+            border-radius: 12px;
             box-shadow: var(--shadow-xl);
             z-index: 10000;
             animation: slideIn 0.3s ease;
         `;
         mensaje.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                     <path d="M5 13l4 4L19 7"/>
                 </svg>
-                <span>Redirigiendo a WhatsApp...</span>
+                <span style="font-weight: 600;">Redirigiendo a WhatsApp...</span>
             </div>
         `;
         
