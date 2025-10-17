@@ -685,12 +685,16 @@ header.scrolled {
     display: block;
     pointer-events: none;
     user-select: none;
+    opacity: 1 !important;
+    transition: none;
 }
 
 /* AFTER image starts completely hidden */
 .after-image {
     clip-path: inset(0 100% 0 0);
     z-index: 2;
+    transition: clip-path 0.05s ease-out;
+    will-change: clip-path;
 }
 
 .label {

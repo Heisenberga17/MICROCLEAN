@@ -317,38 +317,46 @@
         }
     }
     
-    // ===== LAZY LOAD IMAGES =====
+    // ===== EAGER LOAD GALLERY IMAGES, LAZY LOAD OTHERS =====
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
-                    
+
                     // Load the image
                     if (img.dataset.src && !img.src) {
                         img.src = img.dataset.src;
                         img.removeAttribute('data-src');
                     }
-                    
-                    // Add loaded class after image loads
-                    if (img.complete) {
-                        img.classList.add('loaded');
-                    } else {
-                        img.addEventListener('load', function() {
+
+                    // Add loaded class after image loads (only for non-gallery images)
+                    if (!img.closest('.before-after-container')) {
+                        if (img.complete) {
                             img.classList.add('loaded');
-                        }, { once: true });
+                        } else {
+                            img.addEventListener('load', function() {
+                                img.classList.add('loaded');
+                            }, { once: true });
+                        }
                     }
-                    
+
                     imageObserver.unobserve(img);
                 }
             });
         }, {
             rootMargin: '50px'
         });
-        
-        // Observe all lazy images
+
+        // Observe all lazy images (excluding gallery images)
         document.querySelectorAll('img[loading="lazy"]').forEach(img => {
             imageObserver.observe(img);
+        });
+
+        // Immediately mark all gallery images as loaded
+        document.querySelectorAll('.before-after-container img').forEach(img => {
+            img.classList.add('loaded');
+            img.style.opacity = '1';
         });
     } else {
         // Fallback for browsers without IntersectionObserver
@@ -358,6 +366,12 @@
                 img.removeAttribute('data-src');
             }
             img.classList.add('loaded');
+        });
+
+        // Immediately mark all gallery images as loaded
+        document.querySelectorAll('.before-after-container img').forEach(img => {
+            img.classList.add('loaded');
+            img.style.opacity = '1';
         });
     }
     
