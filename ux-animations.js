@@ -39,21 +39,7 @@
         });
     });
 
-    // ==================== HEADER SCROLL EFFECT ====================
-    const header = document.getElementById('header');
-    let lastScroll = 0;
-
-    window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
-
-        if (currentScroll > 100) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-
-        lastScroll = currentScroll;
-    }, { passive: true });
+    // HEADER SCROLL EFFECT - Handled by app.js (no duplicate needed)
 
     // ==================== RIPPLE EFFECT ON BUTTONS ====================
     function createRipple(event) {
@@ -127,79 +113,9 @@
         }, { passive: true });
     }
 
-    // ==================== SMOOTH SCROLL FOR ANCHOR LINKS ====================
-    document.addEventListener('DOMContentLoaded', () => {
-        const links = document.querySelectorAll('a[href^="#"]');
+    // SMOOTH SCROLL - Handled by app.js (no duplicate needed)
 
-        links.forEach(link => {
-            link.addEventListener('click', (e) => {
-                const href = link.getAttribute('href');
-                if (href === '#' || href === '#top') {
-                    e.preventDefault();
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                    return;
-                }
-
-                const target = document.querySelector(href);
-                if (target) {
-                    e.preventDefault();
-                    const headerOffset = 80;
-                    const elementPosition = target.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-    });
-
-    // ==================== SERVICE CARD EXPAND ANIMATION ====================
-    document.addEventListener('DOMContentLoaded', () => {
-        const serviceCards = document.querySelectorAll('.service-card');
-
-        serviceCards.forEach(card => {
-            const button = card.querySelector('.service-link');
-            const details = card.querySelector('.service-details');
-
-            if (button && details) {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault();
-
-                    // Toggle expanded state
-                    const isExpanded = card.classList.contains('expanded');
-
-                    // Close all other cards
-                    serviceCards.forEach(c => {
-                        if (c !== card) {
-                            c.classList.remove('expanded');
-                            const btn = c.querySelector('.service-link');
-                            if (btn) btn.textContent = 'Ver más';
-                        }
-                    });
-
-                    // Toggle current card
-                    card.classList.toggle('expanded');
-                    button.textContent = isExpanded ? 'Ver más' : 'Ver menos';
-
-                    // Smooth scroll to card if expanding
-                    if (!isExpanded) {
-                        setTimeout(() => {
-                            card.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'nearest'
-                            });
-                        }, 100);
-                    }
-                });
-            }
-        });
-    });
+    // SERVICE CARD EXPAND - Handled by app.js (no duplicate needed)
 
     // ==================== WHATSAPP FAB PULSE ON SCROLL ====================
     const whatsappFab = document.querySelector('.whatsapp-fab');
