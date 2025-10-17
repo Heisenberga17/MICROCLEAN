@@ -1,0 +1,13 @@
+# robots.txt for MicroClean
+# https://microcleanpa.com/robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /js/
+Disallow: /*.js$
+
+# Sitemap location
+Sitemap: https://microcleanpa.com/sitemap.xml
+
+# Crawl delay (be nice to servers)
+Crawl-delay: 1
