@@ -1,11 +1,9 @@
-// MicroClean Cotizador - Lógica del Carrito y Generación de Cotización
+// MicroClean Cotizador - Optimizado con Acordeón
 (function() {
     'use strict';
     
-    // Estado del carrito (en memoria, NO localStorage)
     let carritoItems = [];
     
-    // Referencias DOM
     const serviciosTela = document.getElementById('servicios-tela');
     const serviciosCuero = document.getElementById('servicios-cuero');
     const serviciosEspacios = document.getElementById('servicios-espacios');
@@ -15,25 +13,71 @@
     const formularioSeccion = document.getElementById('formulario-seccion');
     const formCotizacion = document.getElementById('form-cotizacion');
     
-    // Inicializar
     document.addEventListener('DOMContentLoaded', function() {
         renderizarServicios();
         actualizarCarrito();
+        inicializarAcordeones();
         
-        // Auto-update año
         const yearSpan = document.getElementById('year');
         if (yearSpan) yearSpan.textContent = new Date().getFullYear();
         
-        // Form submit
         if (formCotizacion) {
             formCotizacion.addEventListener('submit', function(e) {
                 e.preventDefault();
                 enviarCotizacionWhatsApp();
             });
         }
+        
+        // Event listener para sliders - CORREGIDO
+        document.addEventListener('input', function(e) {
+            if (e.target.type === 'range') {
+                e.stopPropagation(); // Prevenir que se cierre el card
+                const controlType = e.target.dataset.control;
+                const servicioItem = e.target.closest('.servicio-item');
+                const valueDisplay = servicioItem.querySelector(`[data-type="${controlType}"]`);
+                
+                if (controlType === 'cantidad') {
+                    const value = parseInt(e.target.value);
+                    const unidad = valueDisplay.textContent.split(' ').slice(-1)[0];
+                    valueDisplay.textContent = `${value} ${unidad}`;
+                } else if (controlType === 'area') {
+                    valueDisplay.textContent = `${e.target.value} m²`;
+                } else if (controlType === 'precio-m2') {
+                    valueDisplay.textContent = `B/.${parseFloat(e.target.value).toFixed(2)}`;
+                }
+            }
+        });
     });
     
-    // Renderizar servicios por categoría
+    // Inicializar acordeones
+    function inicializarAcordeones() {
+        const categorias = document.querySelectorAll('.categoria-servicios');
+        
+        categorias.forEach(categoria => {
+            const header = categoria.querySelector('.categoria-header');
+            const content = categoria.querySelector('.categoria-content');
+            
+            if (header && content) {
+                // Empezar colapsado
+                content.style.maxHeight = '0';
+                content.style.overflow = 'hidden';
+                content.style.transition = 'max-height 0.3s ease';
+                
+                header.addEventListener('click', function() {
+                    const isOpen = categoria.classList.contains('open');
+                    
+                    if (isOpen) {
+                        content.style.maxHeight = '0';
+                        categoria.classList.remove('open');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        categoria.classList.add('open');
+                    }
+                });
+            }
+        });
+    }
+    
     function renderizarServicios() {
         if (serviciosTela) {
             SERVICIOS_CATALOGO.tapiceriaTela.items.forEach(item => {
@@ -60,7 +104,6 @@
         }
     }
     
-    // Crear HTML de servicio individual
     function crearServicioHTML(item, categoria) {
         const div = document.createElement('div');
         div.className = 'servicio-item';
@@ -93,15 +136,17 @@
             </div>
         `;
         
-        // Event listeners
         const btnAgregar = div.querySelector('.btn-agregar');
         btnAgregar.addEventListener('click', function(e) {
             e.stopPropagation();
             agregarAlCarrito(item, categoria, div);
         });
         
-        div.addEventListener('click', function() {
-            // Toggle selección para mostrar controles
+        // CORREGIDO: Solo cerrar al hacer click en el header, no en los controles
+        const header = div.querySelector('.servicio-header');
+        header.addEventListener('click', function(e) {
+            if (e.target.closest('.servicio-controles')) return;
+            
             const yaSeleccionado = div.classList.contains('seleccionado');
             document.querySelectorAll('.servicio-item').forEach(el => {
                 if (el !== div) el.classList.remove('seleccionado');
@@ -112,7 +157,6 @@
         return div;
     }
     
-    // Crear controles (sliders) según tipo de servicio
     function crearControlesHTML(item) {
         if (item.tipo === 'cantidad') {
             return `
@@ -163,7 +207,6 @@
         return '';
     }
     
-    // Agregar item al carrito
     function agregarAlCarrito(item, categoria, divServicio) {
         const controles = divServicio.querySelector('.servicio-controles');
         
@@ -175,7 +218,6 @@
             precio: item.precio
         };
         
-        // Leer valores de sliders
         if (item.tipo === 'cantidad') {
             const sliderCantidad = controles.querySelector('[data-control="cantidad"]');
             itemCarrito.cantidad = parseInt(sliderCantidad.value);
@@ -192,23 +234,18 @@
             itemCarrito.subtotal = item.precio;
         }
         
-        // Verificar si ya existe en carrito
         const existeIndex = carritoItems.findIndex(ci => ci.id === item.id);
         if (existeIndex >= 0) {
-            carritoItems[existeIndex] = itemCarrito; // Actualizar
+            carritoItems[existeIndex] = itemCarrito;
         } else {
             carritoItems.push(itemCarrito);
         }
         
-        // Feedback visual
         mostrarFeedbackAgregado(divServicio);
-        
-        // Actualizar UI
         actualizarCarrito();
         divServicio.classList.remove('seleccionado');
     }
     
-    // Feedback visual al agregar
     function mostrarFeedbackAgregado(elemento) {
         const feedback = document.createElement('div');
         feedback.innerHTML = `
@@ -245,7 +282,6 @@
         }, 1200);
     }
     
-    // Actualizar vista del carrito
     function actualizarCarrito() {
         if (carritoItems.length === 0) {
             carritoContenido.innerHTML = `
@@ -261,7 +297,6 @@
             return;
         }
         
-        // Renderizar items
         let html = '';
         carritoItems.forEach((item, index) => {
             let detalles = '';
@@ -293,7 +328,6 @@
         
         carritoContenido.innerHTML = html;
         
-        // Event listeners para eliminar
         document.querySelectorAll('.btn-eliminar').forEach(btn => {
             btn.addEventListener('click', function() {
                 const index = parseInt(this.dataset.index);
@@ -301,13 +335,9 @@
             });
         });
         
-        // Calcular y mostrar totales
         calcularYMostrarTotales();
-        
-        // Mostrar formulario
         formularioSeccion.style.display = 'block';
         
-        // Scroll suave al formulario en móvil
         if (window.innerWidth < 1024) {
             setTimeout(() => {
                 formularioSeccion.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -315,21 +345,16 @@
         }
     }
     
-    // Eliminar item del carrito
     function eliminarDelCarrito(index) {
         carritoItems.splice(index, 1);
         actualizarCarrito();
     }
     
-    // Calcular y mostrar totales con reglas de negocio
     function calcularYMostrarTotales() {
         const subtotal = carritoItems.reduce((sum, item) => sum + item.subtotal, 0);
-        
-        // Aplicar mínimo de servicio directamente
         const totalFinal = aplicarMinimoServicio(subtotal);
         const minimoAplicado = totalFinal > subtotal;
         
-        // Renderizar totales
         let html = '<div class="carrito-totales">';
         
         html += `
@@ -356,16 +381,14 @@
         `;
         
         html += `<p class="minimo-nota">* Mínimo de servicio: B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)}</p>`;
-        
         html += '</div>';
         
         carritoTotales.innerHTML = html;
         carritoTotales.style.display = 'block';
     }
     
-    // Enviar cotización por WhatsApp
+    // CORREGIDO: Mensaje de WhatsApp más corto
     function enviarCotizacionWhatsApp() {
-        // Obtener datos del formulario
         const formData = new FormData(formCotizacion);
         const nombre = formData.get('nombre');
         const whatsapp = formData.get('whatsapp');
@@ -374,59 +397,45 @@
         const horario = formData.get('horario');
         const notas = formData.get('notas');
         
-        // Construir mensaje
-        let mensaje = `*COTIZACIÓN MICROCLEAN* 🧼✨\n\n`;
-        mensaje += `*Datos del Cliente:*\n`;
-        mensaje += `👤 Nombre: ${nombre}\n`;
-        mensaje += `📱 WhatsApp: ${whatsapp}\n`;
-        mensaje += `📍 Dirección: ${direccion}\n`;
+        // Mensaje más corto para evitar problemas
+        let mensaje = `*COTIZACIÓN MICROCLEAN*\n\n`;
+        mensaje += `👤 ${nombre}\n`;
+        mensaje += `📱 ${whatsapp}\n`;
+        mensaje += `📍 ${direccion}\n`;
         
-        if (fecha) mensaje += `📅 Fecha preferida: ${fecha}\n`;
-        if (horario) mensaje += `🕐 Horario preferido: ${horario}\n`;
+        if (fecha) mensaje += `📅 ${fecha}\n`;
+        if (horario) mensaje += `🕐 ${horario}\n`;
         
-        mensaje += `\n*Servicios Solicitados:*\n`;
-        mensaje += `━━━━━━━━━━━━━━━━━━\n`;
+        mensaje += `\n*Servicios:*\n`;
         
         carritoItems.forEach((item, index) => {
-            mensaje += `\n${index + 1}. *${item.nombre}*\n`;
+            mensaje += `${index + 1}. ${item.nombre}\n`;
             
             if (item.tipo === 'cantidad') {
-                mensaje += `   📦 Cantidad: ${item.cantidad} ${item.unidad}\n`;
-                mensaje += `   💵 Precio unitario: B/.${item.precio.toFixed(2)}\n`;
+                mensaje += `   ${item.cantidad} ${item.unidad} - B/.${item.subtotal.toFixed(2)}\n`;
             } else if (item.tipo === 'area') {
-                mensaje += `   📐 Área: ${item.area} m²\n`;
-                mensaje += `   💵 Precio por m²: B/.${item.precioM2.toFixed(2)}\n`;
+                mensaje += `   ${item.area}m² × B/.${item.precioM2.toFixed(2)} - B/.${item.subtotal.toFixed(2)}\n`;
+            } else {
+                mensaje += `   B/.${item.subtotal.toFixed(2)}\n`;
             }
-            
-            mensaje += `   💰 Subtotal: B/.${item.subtotal.toFixed(2)}\n`;
         });
         
-        // Calcular totales (sin descuentos/promociones)
         const subtotal = carritoItems.reduce((sum, item) => sum + item.subtotal, 0);
         const totalFinal = aplicarMinimoServicio(subtotal);
         
-        mensaje += `\n━━━━━━━━━━━━━━━━━━\n`;
-        mensaje += `Subtotal: B/.${subtotal.toFixed(2)}\n`;
-        mensaje += `\n✅ *TOTAL: B/.${totalFinal.toFixed(2)}*\n`;
-        mensaje += `\n_(Mínimo de servicio: B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)})_\n`;
+        mensaje += `\n*TOTAL: B/.${totalFinal.toFixed(2)}*\n`;
         
         if (notas) {
-            mensaje += `\n*📝 Notas adicionales:*\n${notas}\n`;
+            mensaje += `\n📝 ${notas}\n`;
         }
         
-        mensaje += `\n━━━━━━━━━━━━━━━━━━\n`;
-        mensaje += `Gracias por cotizar con MicroClean 🧼✨`;
-        
-        // Abrir WhatsApp
         const numeroWhatsApp = '50764177111';
         const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
         window.open(urlWhatsApp, '_blank');
         
-        // Feedback
         mostrarMensajeExito();
     }
     
-    // Mostrar mensaje de éxito
     function mostrarMensajeExito() {
         const mensaje = document.createElement('div');
         mensaje.style.cssText = `
@@ -461,25 +470,6 @@
             }, 300);
         }, 3000);
     }
-    
-    // Event listeners para sliders (actualización en tiempo real)
-    document.addEventListener('input', function(e) {
-        if (e.target.type === 'range') {
-            const controlType = e.target.dataset.control;
-            const servicioItem = e.target.closest('.servicio-item');
-            const valueDisplay = servicioItem.querySelector(`[data-type="${controlType}"]`);
-            
-            if (controlType === 'cantidad') {
-                const value = parseInt(e.target.value);
-                const unidad = valueDisplay.textContent.split(' ').slice(-1)[0];
-                valueDisplay.textContent = `${value} ${unidad}`;
-            } else if (controlType === 'area') {
-                valueDisplay.textContent = `${e.target.value} m²`;
-            } else if (controlType === 'precio-m2') {
-                valueDisplay.textContent = `B/.${parseFloat(e.target.value).toFixed(2)}`;
-            }
-        }
-    });
     
     // CSS animations
     const style = document.createElement('style');
