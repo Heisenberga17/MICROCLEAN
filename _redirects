@@ -1,0 +1,8 @@
+# Redirects for MicroClean - Cloudflare Pages
+# https://developers.cloudflare.com/pages/configuration/redirects/
+
+# Redirect old URLs or typos to correct pages (if needed in future)
+# /old-page /new-page 301
+
+# Fallback for 404 - redirect to homepage
+# /* /index.html 404
