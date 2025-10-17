@@ -1,27 +1,25 @@
-// MicroClean Premium JavaScript - Optimizado
+// MicroClean
 (function() {
     'use strict';
     
-    // Feature Detection
     document.documentElement.classList.add('js-enabled');
     document.documentElement.classList.remove('no-js');
     
-    // DOM References
     const header = document.getElementById('header');
     const menuToggle = document.querySelector('.menu-toggle');
     const yearSpan = document.getElementById('year');
     const contactForm = document.getElementById('contact-form');
     
-    // Auto-update copyright year
+    // Auto-update year
     if (yearSpan) {
         yearSpan.textContent = new Date().getFullYear();
     }
     
-    // Header Scroll Effect (optimizado con requestAnimationFrame)
+    // Header Scroll - Optimizado con requestAnimationFrame
     let scrolled = false;
     let ticking = false;
     
-    function handleScroll() {
+    function updateHeader() {
         const shouldBeScrolled = window.scrollY > 50;
         if (shouldBeScrolled !== scrolled) {
             scrolled = shouldBeScrolled;
@@ -32,14 +30,14 @@
     window.addEventListener('scroll', function() {
         if (!ticking) {
             window.requestAnimationFrame(function() {
-                handleScroll();
+                updateHeader();
                 ticking = false;
             });
             ticking = true;
         }
     });
     
-    // Mobile Menu Toggle
+    // Mobile Menu
     if (menuToggle) {
         let menuOpen = false;
         
@@ -87,8 +85,9 @@
         }
     }
     
-    // Active Navigation Link
+    // Active Nav Links
     const sections = document.querySelectorAll('section[id]');
+    let navTicking = false;
     
     function updateActiveNav() {
         const scrollY = window.scrollY + 100;
@@ -109,7 +108,6 @@
         });
     }
     
-    let navTicking = false;
     window.addEventListener('scroll', function() {
         if (!navTicking) {
             window.requestAnimationFrame(function() {
@@ -140,7 +138,7 @@
         });
     });
     
-    // Service Cards Expand/Collapse
+    // Service Cards Expand
     const serviceCards = document.querySelectorAll('.service-card');
     
     serviceCards.forEach(card => {
@@ -169,13 +167,12 @@
         let position = 50;
         let isDragging = false;
         
-        updateSliderPosition(position);
+        updatePosition(position);
         
-        function updateSliderPosition(pos) {
+        function updatePosition(pos) {
             const clampedPos = Math.max(0, Math.min(100, pos));
             position = clampedPos;
             handle.style.left = position + '%';
-            // CORREGIDO: Ahora el clip-path va desde la izquierda hasta la posición
             afterImage.style.clipPath = `polygon(0 0, ${position}% 0, ${position}% 100%, 0 100%)`;
         }
         
@@ -183,10 +180,10 @@
             const rect = wrapper.getBoundingClientRect();
             const x = clientX - rect.left;
             const percentage = (x / rect.width) * 100;
-            updateSliderPosition(percentage);
+            updatePosition(percentage);
         }
         
-        // Mouse events
+        // Mouse
         handle.addEventListener('mousedown', function(e) {
             e.preventDefault();
             isDragging = true;
@@ -208,8 +205,8 @@
             isDragging = false;
         });
         
-        // Touch events
-        handle.addEventListener('touchstart', function(e) {
+        // Touch
+        handle.addEventListener('touchstart', function() {
             isDragging = true;
         });
         
@@ -228,23 +225,18 @@
         });
     });
     
-    // Form Handling
+    // Contact Form
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
             
-            // Build WhatsApp message
-            let message = `Hola MicroClean, quiero una cotización.\n\n`;
-            message += `Nombre: ${data.name}\n`;
-            message += `Teléfono: ${data.phone}\n`;
+            let msg = `Hola MicroClean, quiero una cotización.\n\n`;
+            msg += `Nombre: ${formData.get('name')}\n`;
+            msg += `Teléfono: ${formData.get('phone')}\n`;
             
-            if (data.service) {
+            if (formData.get('service')) {
                 const services = {
                     'tapiceria-tela': 'Tapicería en Tela',
                     'tapiceria-cuero': 'Tapicería en Cuero',
@@ -253,25 +245,25 @@
                     'tratamiento-enzimatico': 'Tratamiento Enzimático',
                     'otro': 'Otro Servicio'
                 };
-                message += `Servicio: ${services[data.service] || data.service}\n`;
+                msg += `Servicio: ${services[formData.get('service')]}\n`;
             }
             
-            if (data.message) {
-                message += `Mensaje: ${data.message}\n`;
+            if (formData.get('message')) {
+                msg += `Mensaje: ${formData.get('message')}\n`;
             }
             
-            const whatsappUrl = `https://wa.me/50764177111?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
+            const url = `https://wa.me/50764177111?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
             
             this.reset();
             showFormSuccess();
         });
         
         function showFormSuccess() {
-            const successDiv = document.createElement('div');
-            successDiv.className = 'form-success';
-            successDiv.innerHTML = '✔ Redirigiendo a WhatsApp...';
-            successDiv.style.cssText = `
+            const div = document.createElement('div');
+            div.className = 'form-success';
+            div.innerHTML = '✔ Redirigiendo a WhatsApp...';
+            div.style.cssText = `
                 position: fixed;
                 top: 100px;
                 right: 20px;
@@ -280,24 +272,22 @@
                 padding: 1rem 2rem;
                 border-radius: 8px;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                z-index: 1000;
+                z-index: 10000;
                 animation: slideIn 0.3s ease;
             `;
             
-            document.body.appendChild(successDiv);
+            document.body.appendChild(div);
             
             setTimeout(() => {
-                successDiv.style.animation = 'slideOut 0.3s ease';
+                div.style.animation = 'slideOut 0.3s ease';
                 setTimeout(() => {
-                    if (successDiv.parentNode) {
-                        document.body.removeChild(successDiv);
-                    }
+                    if (div.parentNode) document.body.removeChild(div);
                 }, 300);
             }, 3000);
         }
     }
     
-    // Lazy Load Images - OPTIMIZADO
+    // Lazy Load Images - Optimizado
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -311,7 +301,7 @@
                     
                     img.addEventListener('load', function() {
                         img.classList.add('loaded');
-                    });
+                    }, { once: true });
                     
                     imageObserver.unobserve(img);
                 }
@@ -325,76 +315,17 @@
         });
     }
     
-    // Add CSS animations
+    // CSS Animations
     const style = document.createElement('style');
     style.textContent = `
-        .mobile-nav {
-            position: fixed;
-            top: 72px;
-            left: 0;
-            right: 0;
-            background: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transform: translateY(-100%);
-            transition: transform 0.3s ease;
-            z-index: 900;
-        }
-        
-        .mobile-nav.active {
-            transform: translateY(0);
-        }
-        
-        .mobile-nav a {
-            display: block;
-            padding: 1rem 1.5rem;
-            color: var(--gray-800);
-            border-bottom: 1px solid var(--gray-200);
-            transition: background 0.2s;
-        }
-        
-        .mobile-nav a:hover {
-            background: var(--gray-50);
-        }
-        
-        .mobile-nav-whatsapp {
-            background: var(--whatsapp) !important;
-            color: white !important;
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-weight: 600;
-        }
-        
         @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
         @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        
-        img {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        img.loaded {
-            opacity: 1;
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
         }
     `;
     document.head.appendChild(style);
