@@ -7,374 +7,9 @@
     <meta name="theme-color" content="#0965C6">
     <title>Cotizador - MicroClean</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Estilos específicos del cotizador */
-        .cotizador-container {
-            min-height: 100vh;
-            background: var(--gray-50);
-            padding-top: 80px;
-        }
-        
-        .cotizador-header {
-            background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-        }
-        
-        .cotizador-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        @media (min-width: 1024px) {
-            .cotizador-grid {
-                grid-template-columns: 2fr 1fr;
-            }
-        }
-        
-        .servicios-panel, .carrito-panel {
-            background: white;
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .categoria-servicios {
-            margin-bottom: 2rem;
-        }
-        
-        .categoria-servicios h3 {
-            color: var(--blue-2);
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--blue-accent);
-        }
-        
-        .servicio-item {
-            padding: 1rem;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-sm);
-            margin-bottom: 0.75rem;
-            transition: var(--transition);
-        }
-        
-        .servicio-item:hover {
-            border-color: var(--blue-accent);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .servicio-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .servicio-nombre {
-            font-weight: 600;
-            color: var(--gray-900);
-        }
-        
-        .servicio-precio {
-            font-weight: 700;
-            color: var(--blue-1);
-        }
-        
-        .servicio-controles {
-            display: none;
-            margin-top: 1rem;
-            animation: slideDown 0.3s ease;
-        }
-        
-        .servicio-item.seleccionado .servicio-controles {
-            display: block;
-        }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                max-height: 0;
-            }
-            to {
-                opacity: 1;
-                max-height: 200px;
-            }
-        }
-        
-        .slider-control {
-            margin-top: 1rem;
-        }
-        
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--gray-600);
-        }
-        
-        .slider-value {
-            font-weight: 600;
-            color: var(--blue-2);
-        }
-        
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: var(--gray-200);
-            outline: none;
-            -webkit-appearance: none;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--blue-2);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        input[type="range"]::-webkit-slider-thumb:hover {
-            background: var(--blue-1);
-            transform: scale(1.2);
-        }
-        
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--blue-2);
-            cursor: pointer;
-            border: none;
-        }
-        
-        .btn-agregar {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--blue-2);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: 1rem;
-        }
-        
-        .btn-agregar:hover:not(:disabled) {
-            background: var(--blue-1);
-            transform: translateY(-2px);
-        }
-        
-        .btn-agregar:disabled {
-            background: var(--gray-300);
-            cursor: not-allowed;
-        }
-        
-        .carrito-vacio {
-            text-align: center;
-            padding: 2rem;
-            color: var(--gray-400);
-        }
-        
-        .carrito-item {
-            padding: 1rem;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-sm);
-            margin-bottom: 0.75rem;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .carrito-item-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-        }
-        
-        .btn-eliminar {
-            background: none;
-            border: none;
-            color: var(--gray-400);
-            cursor: pointer;
-            padding: 0.25rem;
-            transition: var(--transition);
-        }
-        
-        .btn-eliminar:hover {
-            color: #dc2626;
-        }
-        
-        .carrito-item-detalles {
-            font-size: 0.875rem;
-            color: var(--gray-600);
-        }
-        
-        .carrito-totales {
-            border-top: 2px solid var(--gray-200);
-            padding-top: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .total-linea {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-        }
-        
-        .total-linea.destacado {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--blue-2);
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            border-top: 1px solid var(--gray-200);
-        }
-        
-        .descuento-aplicado {
-            color: #10b981;
-        }
-        
-        .minimo-nota {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-            font-style: italic;
-            margin-top: 0.5rem;
-        }
-        
-        .formulario-cliente {
-            background: white;
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-md);
-            margin-top: 2rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--gray-700);
-        }
-        
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-sm);
-            font-family: inherit;
-            transition: var(--transition);
-        }
-        
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--blue-2);
-            box-shadow: 0 0 0 3px rgba(9, 101, 198, 0.1);
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        
-        @media (min-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        
-        .btn-enviar-cotizacion {
-            width: 100%;
-            padding: 1rem;
-            background: var(--whatsapp);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 1.125rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
-        }
-        
-        .btn-enviar-cotizacion:hover:not(:disabled) {
-            background: var(--whatsapp-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .btn-enviar-cotizacion:disabled {
-            background: var(--gray-300);
-            cursor: not-allowed;
-        }
-        
-        .btn-placeholder-email {
-            width: 100%;
-            padding: 1rem;
-            background: var(--gray-600);
-            color: white;
-            border: 2px dashed var(--gray-400);
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: not-allowed;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            opacity: 0.6;
-        }
-        
-        .nota-funcionalidad {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-            text-align: center;
-            margin-top: 0.5rem;
-            font-style: italic;
-        }
-        
-        .carrito-sticky {
-            position: sticky;
-            top: 100px;
-        }
-        
-        .badge-nuevo {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            background: #10b981;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 4px;
-            margin-left: 0.5rem;
-        }
-    </style>
 </head>
 <body>
-    <!-- Header (mismo que index.html) -->
+    <!-- Header -->
     <header id="header">
         <div class="container">
             <div class="header-content">
@@ -425,27 +60,21 @@
                     <!-- Tapicería en Tela -->
                     <div class="categoria-servicios">
                         <h3>Limpieza de Tapicería en Tela</h3>
-                        <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 1rem;">
-                            Limpieza de tapicería en tela: sofás, sillas, colchones, alfombras y más.
-                        </p>
+                        <p>Limpieza de tapicería en tela: sofás, sillas, colchones, alfombras y más.</p>
                         <div id="servicios-tela"></div>
                     </div>
 
                     <!-- Tapicería en Cuero -->
                     <div class="categoria-servicios">
                         <h3>Limpieza de Tapicería en Cuero</h3>
-                        <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 1rem;">
-                            Limpieza y tratamiento de cuero (limpieza, humectación y protección).
-                        </p>
+                        <p>Limpieza y tratamiento de cuero (limpieza, humectación y protección).</p>
                         <div id="servicios-cuero"></div>
                     </div>
 
                     <!-- Limpieza de Espacios -->
                     <div class="categoria-servicios">
                         <h3>Limpieza General de Espacios <span class="badge-nuevo">NUEVO</span></h3>
-                        <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 1rem;">
-                            Limpieza profesional de casas, oficinas, escuelas, restaurantes y negocios por m².
-                        </p>
+                        <p>Limpieza profesional de casas, oficinas, escuelas, restaurantes y negocios por m².</p>
                         <div id="servicios-espacios"></div>
                     </div>
 
@@ -473,9 +102,12 @@
                 </div>
             </div>
 
-            <!-- Formulario de Cliente -->
+            <!-- Formulario de Cliente - SIMPLIFICADO -->
             <div class="formulario-cliente" id="formulario-seccion" style="display: none;">
-                <h2>Información para la Cotización</h2>
+                <h2>Completa tu Información</h2>
+                <p style="color: var(--gray-600); margin-bottom: var(--space-xl);">
+                    Llena los datos y presiona el botón para enviar tu cotización por WhatsApp
+                </p>
                 <form id="form-cotizacion">
                     <div class="form-row">
                         <div class="form-group">
@@ -512,22 +144,12 @@
                         </svg>
                         Enviar Cotización por WhatsApp
                     </button>
-                    
-                    <button type="button" class="btn-placeholder-email" disabled>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                        Generar y Enviar Factura por Email
-                    </button>
-                    <p class="nota-funcionalidad">
-                        ⚠️ Funcionalidad de facturación por email en desarrollo
-                    </p>
                 </form>
             </div>
         </div>
     </main>
 
-    <!-- Footer (mismo que index.html) -->
+    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="footer-content">
