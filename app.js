@@ -1,4 +1,4 @@
-// MicroClean Premium JavaScript - Progressive Enhancement
+// MicroClean - Main Application JavaScript - COMPLETE
 (function() {
     'use strict';
     
@@ -9,7 +9,6 @@
     // DOM References
     const header = document.getElementById('header');
     const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelectorAll('.nav-link');
     const yearSpan = document.getElementById('year');
     const contactForm = document.getElementById('contact-form');
     
@@ -18,31 +17,31 @@
         yearSpan.textContent = new Date().getFullYear();
     }
     
-    // Header Scroll Effect
+    // ===== HEADER SCROLL EFFECT =====
     let scrolled = false;
-    function handleScroll() {
+    let ticking = false;
+    
+    function updateHeader() {
         const shouldBeScrolled = window.scrollY > 50;
         if (shouldBeScrolled !== scrolled) {
             scrolled = shouldBeScrolled;
-            if (scrolled) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
+            if (header) {
+                header.classList.toggle('scrolled', scrolled);
             }
         }
     }
     
-    // Throttled scroll handler
-    let scrollTimer;
     window.addEventListener('scroll', function() {
-        if (scrollTimer) return;
-        scrollTimer = setTimeout(function() {
-            scrollTimer = null;
-            handleScroll();
-        }, 10);
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                updateHeader();
+                ticking = false;
+            });
+            ticking = true;
+        }
     });
     
-    // Mobile Menu Toggle
+    // ===== MOBILE MENU =====
     if (menuToggle) {
         let menuOpen = false;
         
@@ -51,18 +50,22 @@
             this.classList.toggle('active', menuOpen);
             this.setAttribute('aria-expanded', menuOpen);
             
-            // Create/toggle mobile menu
             let mobileNav = document.querySelector('.mobile-nav');
             if (!mobileNav) {
                 mobileNav = createMobileNav();
             }
             mobileNav.classList.toggle('active', menuOpen);
+            
+            // Prevent body scroll when menu is open
+            document.body.style.overflow = menuOpen ? 'hidden' : '';
         });
         
         function createMobileNav() {
             const nav = document.createElement('nav');
             nav.className = 'mobile-nav';
             nav.innerHTML = `
+                <a href="cotizador.html" class="mobile-nav-link">Cotizador</a>
+                <a href="#quienes-somos" class="mobile-nav-link">Quiénes Somos</a>
                 <a href="#servicios" class="mobile-nav-link">Servicios</a>
                 <a href="#galeria" class="mobile-nav-link">Galería</a>
                 <a href="#contacto" class="mobile-nav-link">Contacto</a>
@@ -76,15 +79,16 @@
                     WhatsApp
                 </a>
             `;
-            header.appendChild(nav);
+            document.body.appendChild(nav);
             
-            // Add click handlers to close menu
+            // Close menu when clicking links
             nav.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', function() {
                     menuOpen = false;
                     menuToggle.classList.remove('active');
                     menuToggle.setAttribute('aria-expanded', false);
                     nav.classList.remove('active');
+                    document.body.style.overflow = '';
                 });
             });
             
@@ -92,8 +96,9 @@
         }
     }
     
-    // Active Navigation Link on Scroll
+    // ===== ACTIVE NAV LINKS =====
     const sections = document.querySelectorAll('section[id]');
+    let navTicking = false;
     
     function updateActiveNav() {
         const scrollY = window.scrollY + 100;
@@ -114,10 +119,19 @@
         });
     }
     
-    window.addEventListener('scroll', updateActiveNav);
+    window.addEventListener('scroll', function() {
+        if (!navTicking) {
+            window.requestAnimationFrame(function() {
+                updateActiveNav();
+                navTicking = false;
+            });
+            navTicking = true;
+        }
+    });
+    
     updateActiveNav();
     
-    // Smooth Scroll for Navigation Links
+    // ===== SMOOTH SCROLL =====
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const href = this.getAttribute('href');
@@ -136,7 +150,7 @@
         });
     });
     
-    // Service Cards Expand/Collapse
+    // ===== SERVICE CARDS EXPAND =====
     const serviceCards = document.querySelectorAll('.service-card');
     
     serviceCards.forEach(card => {
@@ -145,164 +159,133 @@
         if (button) {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
-                
-                // Toggle expanded state
                 const isExpanded = card.classList.contains('expanded');
-                
-                if (isExpanded) {
-                    card.classList.remove('expanded');
-                    button.textContent = 'Ver más';
-                } else {
-                    card.classList.add('expanded');
-                    button.textContent = 'Ver menos';
-                }
+                card.classList.toggle('expanded');
+                button.textContent = isExpanded ? 'Ver más' : 'Ver menos';
             });
         }
     });
     
-    // Before/After Slider Functionality - Enhanced for proper image display
+    // ===== BEFORE/AFTER SLIDER - PERFECT VERSION =====
     const sliders = document.querySelectorAll('.before-after-container');
     
     sliders.forEach(container => {
         const handle = container.querySelector('.slider-handle');
         const afterImage = container.querySelector('.after-image');
+        const beforeImage = container.querySelector('.before-image');
         const wrapper = container.querySelector('.slider-wrapper');
-        const imagePair = container.querySelector('.image-pair');
         
-        if (!handle || !afterImage || !wrapper) return;
+        if (!handle || !afterImage || !wrapper || !beforeImage) return;
         
-        // Ensure images are properly sized
-        const images = imagePair.querySelectorAll('img');
-        images.forEach(img => {
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = 'cover';
-            img.style.display = 'block';
-        });
-        
-        let position = 50;
+        let position = 0; // Start at 0% (showing only BEFORE)
         let isDragging = false;
         
-        // Apply initial position
+        // Initial setup
         updateSliderPosition(position);
         
         function updateSliderPosition(pos) {
             const clampedPos = Math.max(0, Math.min(100, pos));
             position = clampedPos;
+            
+            // Move handle
             handle.style.left = position + '%';
-            // Use polygon clip-path for better browser compatibility and performance
-            afterImage.style.clipPath = `polygon(0 0, ${position}% 0, ${position}% 100%, 0 100%)`;
+            
+            // Clip the AFTER image to reveal it as we slide right
+            // At 0%: after image is completely hidden (clip-path: inset(0 100% 0 0))
+            // At 100%: after image is fully visible (clip-path: inset(0 0 0 0))
+            afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
         }
         
-        function handleMove(clientX) {
+        function getPosition(clientX) {
             const rect = wrapper.getBoundingClientRect();
             const x = clientX - rect.left;
             const percentage = (x / rect.width) * 100;
-            updateSliderPosition(percentage);
+            return percentage;
         }
         
-        // Mouse events
-        function handleMouseMove(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-            handleMove(e.clientX);
-        }
-        
-        function handleMouseUp() {
-            isDragging = false;
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        }
-        
+        // Mouse Events
         handle.addEventListener('mousedown', function(e) {
             e.preventDefault();
             isDragging = true;
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
         });
         
         wrapper.addEventListener('mousedown', function(e) {
             e.preventDefault();
             isDragging = true;
-            handleMove(e.clientX);
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
+            updateSliderPosition(getPosition(e.clientX));
         });
         
-        // Touch events
-        function handleTouchMove(e) {
+        document.addEventListener('mousemove', function(e) {
             if (!isDragging) return;
-            handleMove(e.touches[0].clientX);
-        }
+            e.preventDefault();
+            updateSliderPosition(getPosition(e.clientX));
+        });
         
-        function handleTouchEnd() {
+        document.addEventListener('mouseup', function() {
             isDragging = false;
-            document.removeEventListener('touchmove', handleTouchMove);
-            document.removeEventListener('touchend', handleTouchEnd);
-        }
+        });
         
+        // Touch Events
         handle.addEventListener('touchstart', function(e) {
+            e.preventDefault();
             isDragging = true;
-            document.addEventListener('touchmove', handleTouchMove);
-            document.addEventListener('touchend', handleTouchEnd);
         });
         
         wrapper.addEventListener('touchstart', function(e) {
             isDragging = true;
-            handleMove(e.touches[0].clientX);
-            document.addEventListener('touchmove', handleTouchMove);
-            document.addEventListener('touchend', handleTouchEnd);
+            updateSliderPosition(getPosition(e.touches[0].clientX));
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            updateSliderPosition(getPosition(e.touches[0].clientX));
+        }, { passive: false });
+        
+        document.addEventListener('touchend', function() {
+            isDragging = false;
         });
     });
     
-    // Form Handling
+    // ===== CONTACT FORM =====
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Get form data
             const formData = new FormData(this);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
             
-            // Build WhatsApp message
-            let message = `Hola MicroClean, quiero una cotización.\n\n`;
-            message += `Nombre: ${data.name}\n`;
-            message += `Teléfono: ${data.phone}\n`;
+            let msg = `Hola MicroClean, quiero una cotización.\n\n`;
+            msg += `Nombre: ${formData.get('name')}\n`;
+            msg += `Teléfono: ${formData.get('phone')}\n`;
             
-            if (data.service) {
+            if (formData.get('service')) {
                 const services = {
-                    'sofa': 'Limpieza de Sofás',
-                    'colchon': 'Limpieza de Colchones',
-                    'sillas': 'Limpieza de Sillas',
-                    'cuero': 'Limpieza de Cuero',
+                    'tapiceria-tela': 'Tapicería en Tela',
+                    'tapiceria-cuero': 'Tapicería en Cuero',
+                    'limpieza-espacios': 'Limpieza de Espacios',
+                    'impermeabilizacion': 'Impermeabilización',
+                    'tratamiento-enzimatico': 'Tratamiento Enzimático',
                     'otro': 'Otro Servicio'
                 };
-                message += `Servicio: ${services[data.service] || data.service}\n`;
+                msg += `Servicio: ${services[formData.get('service')]}\n`;
             }
             
-            if (data.message) {
-                message += `Mensaje: ${data.message}\n`;
+            if (formData.get('message')) {
+                msg += `Mensaje: ${formData.get('message')}\n`;
             }
             
-            // Open WhatsApp with message
-            const whatsappUrl = `https://wa.me/50764177111?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
+            const url = `https://wa.me/50764177111?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
             
-            // Reset form
             this.reset();
-            
-            // Show success message
             showFormSuccess();
         });
         
         function showFormSuccess() {
-            const successDiv = document.createElement('div');
-            successDiv.className = 'form-success';
-            successDiv.innerHTML = '✔ Redirigiendo a WhatsApp...';
-            successDiv.style.cssText = `
+            const div = document.createElement('div');
+            div.className = 'form-success';
+            div.innerHTML = '✔ Redirigiendo a WhatsApp...';
+            div.style.cssText = `
                 position: fixed;
                 top: 100px;
                 right: 20px;
@@ -311,144 +294,76 @@
                 padding: 1rem 2rem;
                 border-radius: 8px;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                z-index: 1000;
-                animation: slideIn 0.3s ease;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease;
             `;
             
-            document.body.appendChild(successDiv);
+            document.body.appendChild(div);
             
             setTimeout(() => {
-                successDiv.style.animation = 'slideOut 0.3s ease';
+                div.style.animation = 'slideOutRight 0.3s ease';
                 setTimeout(() => {
-                    document.body.removeChild(successDiv);
+                    if (div.parentNode) document.body.removeChild(div);
                 }, 300);
             }, 3000);
         }
     }
     
-    // Enhanced Lazy Load Images with proper sizing
+    // ===== LAZY LOAD IMAGES =====
     if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
+        const imageObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
                     
-                    // Ensure image maintains aspect ratio while loading
-                    if (!img.style.aspectRatio && img.width && img.height) {
-                        img.style.aspectRatio = `${img.width} / ${img.height}`;
-                    }
-                    
+                    // Load the image
                     if (img.dataset.src && !img.src) {
                         img.src = img.dataset.src;
                         img.removeAttribute('data-src');
                     }
-                    img.classList.add('loaded');
-                    observer.unobserve(img);
+                    
+                    // Add loaded class after image loads
+                    if (img.complete) {
+                        img.classList.add('loaded');
+                    } else {
+                        img.addEventListener('load', function() {
+                            img.classList.add('loaded');
+                        }, { once: true });
+                    }
+                    
+                    imageObserver.unobserve(img);
                 }
             });
         }, {
             rootMargin: '50px'
         });
         
+        // Observe all lazy images
         document.querySelectorAll('img[loading="lazy"]').forEach(img => {
             imageObserver.observe(img);
         });
+    } else {
+        // Fallback for browsers without IntersectionObserver
+        document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+            if (img.dataset.src) {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+            }
+            img.classList.add('loaded');
+        });
     }
     
-    // Add CSS animations and image display fixes
+    // Add CSS animations
     const style = document.createElement('style');
     style.textContent = `
-        .mobile-nav {
-            position: fixed;
-            top: 72px;
-            left: 0;
-            right: 0;
-            background: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transform: translateY(-100%);
-            transition: transform 0.3s ease;
-            z-index: 900;
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
-        .mobile-nav.active {
-            transform: translateY(0);
-        }
-        
-        .mobile-nav a {
-            display: block;
-            padding: 1rem 1.5rem;
-            color: var(--gray-800);
-            border-bottom: 1px solid var(--gray-200);
-            transition: background 0.2s;
-        }
-        
-        .mobile-nav a:hover {
-            background: var(--gray-50);
-        }
-        
-        .mobile-nav-whatsapp {
-            background: var(--whatsapp) !important;
-            color: white !important;
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-weight: 600;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        
-        img.loaded {
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        /* Ensure before/after images maintain aspect ratio */
-        .image-pair {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-        }
-        
-        .before-image,
-        .after-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .before-image img,
-        .after-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
         }
     `;
     document.head.appendChild(style);

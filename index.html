@@ -2,7 +2,7 @@
 <html lang="es-PA">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta name="description" content="MicroClean - Limpieza profesional de sofás, colchones y tapicería en Panamá. Resultados garantizados.">
     <meta name="keywords" content="limpieza, sofás, colchones, tapicería, Panamá, servicio profesional">
     <meta property="og:title" content="MicroClean - Limpieza Profesional en Panamá">
@@ -10,58 +10,6 @@
     <meta name="theme-color" content="#0965C6">
     <title>MicroClean - Limpieza Profesional en Panamá</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Image display fixes to prevent compression */
-        img {
-            max-width: 100%;
-            height: auto;
-            object-fit: cover;
-            display: block;
-        }
-        
-        /* Logo specific fixes */
-        .logo,
-        .footer-logo {
-            object-fit: contain !important;
-            width: auto;
-            max-width: 100%;
-        }
-        
-        .footer-logo {
-            height: 100px;
-            width: auto;
-        }
-        
-        .service-image img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-        }
-        
-        .before-image img,
-        .after-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        
-        .image-pair {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-            overflow: hidden;
-        }
-        
-        .before-image,
-        .after-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
 </head>
 <body>
     <!-- Header -->
@@ -69,25 +17,27 @@
         <div class="container">
             <div class="header-content">
                 <a href="#top" class="logo-link" aria-label="MicroClean - Inicio">
-                    <img src="/public/images/MicroClean_Main.jpg" alt="MicroClean" class="logo" width="150" height="50">
+                    <img src="/public/images/MicroClean_Main.jpg" alt="MicroClean Logo" class="logo" width="150" height="50">
                     <span class="logo-text">MicroClean</span>
                 </a>
-                <nav class="nav-menu">
+                <nav class="nav-menu" aria-label="Navegación principal">
+                    <a href="cotizador.html" class="nav-link">Cotizador</a>
+                    <a href="#quienes-somos" class="nav-link">Quiénes Somos</a>
                     <a href="#servicios" class="nav-link">Servicios</a>
                     <a href="#galeria" class="nav-link">Galería</a>
                     <a href="#contacto" class="nav-link">Contacto</a>
                     <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotización." 
                        target="_blank" 
-                       rel="noopener" 
+                       rel="noopener noreferrer" 
                        class="btn-whatsapp-header"
                        aria-label="Chatear por WhatsApp">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
                         </svg>
                         <span>WhatsApp</span>
                     </a>
                 </nav>
-                <button class="menu-toggle" aria-label="Menú" aria-expanded="false">
+                <button class="menu-toggle" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="mobile-menu">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -98,20 +48,40 @@
 
     <!-- Hero Section -->
     <section class="hero" id="top">
-        <div class="hero-bg"></div>
+        <div class="hero-bg" aria-hidden="true"></div>
         <div class="container">
             <div class="hero-content">
                 <h1>Limpieza profesional, resultados de impacto.</h1>
-                <p>Sofás, colchones y más – con estándares de calidad y servicio en Panamá.</p>
-                <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotización." 
-                   target="_blank" 
-                   rel="noopener" 
-                   class="btn-primary">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                    </svg>
-                    Escríbenos por WhatsApp
-                </a>
+                <p>Micro Clean es una empresa especializada en limpieza profesional de tapicería en tela y cuero. Trabajamos con maquinaria de inyección–succión y productos de alta calidad para devolver la frescura y prolongar la vida útil de los muebles de cada cliente.</p>
+                <div class="hero-buttons">
+                    <a href="cotizador.html" class="btn-primary">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        Cotizar Ahora
+                    </a>
+                    <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotización." 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="btn-primary btn-whatsapp-hero">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                        </svg>
+                        Escríbenos por WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiénes Somos Section -->
+    <section class="about" id="quienes-somos">
+        <div class="container">
+            <div class="section-header">
+                <h2>Quiénes Somos</h2>
+            </div>
+            <div class="about-content">
+                <p>Micro Clean es una empresa especializada en limpieza profesional de tapicería en tela y cuero. Trabajamos con maquinaria de inyección–succión y productos de alta calidad para devolver la frescura y prolongar la vida útil de los muebles de cada cliente.</p>
             </div>
         </div>
     </section>
@@ -120,117 +90,126 @@
     <section class="services" id="servicios">
         <div class="container">
             <div class="section-header">
-                <h2>Nuestros Servicios</h2>
+                <h2>Servicios Principales</h2>
                 <p>Especialistas en limpieza profunda con resultados garantizados</p>
             </div>
             <div class="services-grid">
+                <!-- Service 1: Tapicería en Tela -->
                 <article class="service-card">
                     <div class="service-image">
-                        <img src="/public/images/services/Sofa.jpg" alt="Limpieza de Sofás" loading="lazy" width="400" height="250">
+                        <img src="/public/images/services/Sofa.jpg" alt="Limpieza de Tapicería en Tela" loading="lazy" width="400" height="250">
                     </div>
                     <div class="service-content">
-                        <h3>Limpieza de Sofás</h3>
-                        <p>Eliminamos manchas y olores, dejando tu sofá como nuevo</p>
+                        <h3>Limpieza de Tapicería en Tela</h3>
+                        <p>Sofás, sillas, colchones, alfombras y más</p>
                         <div class="service-details">
-                            <p>Utilizamos productos especializados que penetran profundamente en las fibras del sofá para eliminar suciedad, manchas difíciles y bacterias. Nuestro proceso incluye aspirado profundo, aplicación de productos eco-amigables, extracción con equipos profesionales y tiempo de secado rápido.</p>
+                            <p>Limpieza profunda de tapicería en tela con maquinaria de inyección-succión y productos de alta calidad.</p>
                             <ul>
-                                <li>Eliminación de manchas persistentes</li>
+                                <li>Eliminación de manchas y olores</li>
                                 <li>Desinfección profunda</li>
-                                <li>Restauración del color original</li>
-                                <li>Productos seguros para mascotas y niños</li>
+                                <li>Productos seguros y eco-amigables</li>
+                                <li>Secado rápido</li>
                             </ul>
                         </div>
                         <div class="service-footer">
-                            <span class="price">Desde $35</span>
-                            <button class="service-link">Ver más</button>
+                            <span class="price">Desde B/.10.00</span>
+                            <button class="service-link" aria-label="Ver más detalles de Limpieza de Tapicería en Tela">Ver más</button>
                         </div>
                     </div>
                 </article>
-                <article class="service-card">
-                    <div class="service-image">
-                        <img src="/public/images/services/Cama.jpg" alt="Limpieza de Colchones" loading="lazy" width="400" height="250">
-                    </div>
-                    <div class="service-content">
-                        <h3>Limpieza de Colchones</h3>
-                        <p>Desinfección profunda y eliminación de ácaros</p>
-                        <div class="service-details">
-                            <p>Tu colchón acumula ácaros, células muertas y bacterias que pueden afectar tu salud. Nuestro servicio profesional incluye aspirado con filtro HEPA, tratamiento anti-ácaros, desinfección profunda y eliminación de olores.</p>
-                            <ul>
-                                <li>Eliminación del 99.9% de ácaros</li>
-                                <li>Reducción de alergias</li>
-                                <li>Mejora de la calidad del sueño</li>
-                                <li>Extensión de la vida útil del colchón</li>
-                            </ul>
-                        </div>
-                        <div class="service-footer">
-                            <span class="price">Desde $30</span>
-                            <button class="service-link">Ver más</button>
-                        </div>
-                    </div>
-                </article>
-                <article class="service-card">
-                    <div class="service-image">
-                        <img src="/public/images/services/Sofa.jpg" alt="Limpieza de Sillas" loading="lazy" width="400" height="250">
-                    </div>
-                    <div class="service-content">
-                        <h3>Limpieza de Sillas</h3>
-                        <p>Restauramos tus sillas de comedor y oficina</p>
-                        <div class="service-details">
-                            <p>Las sillas requieren atención especial debido a su uso frecuente. Nuestro servicio incluye limpieza de respaldos y asientos, tratamiento de manchas específicas, restauración del acolchado y cuidado de estructuras de madera o metal.</p>
-                            <ul>
-                                <li>Limpieza de sillas de comedor</li>
-                                <li>Sillas de oficina y ejecutivas</li>
-                                <li>Tratamiento antimanchas</li>
-                                <li>Servicio rápido y eficiente</li>
-                            </ul>
-                        </div>
-                        <div class="service-footer">
-                            <span class="price">Desde $15</span>
-                            <button class="service-link">Ver más</button>
-                        </div>
-                    </div>
-                </article>
+
+                <!-- Service 2: Cuero -->
                 <article class="service-card">
                     <div class="service-image">
                         <img src="/public/images/services/Sofa.jpg" alt="Limpieza de Cuero" loading="lazy" width="400" height="250">
                     </div>
                     <div class="service-content">
-                        <h3>Limpieza de Cuero</h3>
-                        <p>Cuidado especializado para muebles de cuero</p>
+                        <h3>Limpieza y Tratamiento de Cuero</h3>
+                        <p>Limpieza, humectación y protección</p>
                         <div class="service-details">
-                            <p>El cuero requiere productos y técnicas especiales para mantener su belleza y durabilidad. Ofrecemos limpieza profunda sin dañar el material, hidratación para prevenir grietas, restauración del brillo natural y protección contra futuras manchas.</p>
+                            <p>Tratamiento especializado para muebles de cuero que incluye limpieza profunda, humectación y protección contra el desgaste.</p>
                             <ul>
-                                <li>Productos específicos para cuero</li>
-                                <li>Hidratación y acondicionamiento</li>
-                                <li>Eliminación de grietas superficiales</li>
-                                <li>Protección contra desgaste</li>
+                                <li>Limpieza suave sin dañar el cuero</li>
+                                <li>Humectación para prevenir grietas</li>
+                                <li>Restauración del brillo natural</li>
+                                <li>Protección duradera</li>
                             </ul>
                         </div>
                         <div class="service-footer">
-                            <span class="price">Desde $40</span>
-                            <button class="service-link">Ver más</button>
+                            <span class="price">Desde B/.75.00</span>
+                            <button class="service-link" aria-label="Ver más detalles de Limpieza de Cuero">Ver más</button>
                         </div>
                     </div>
                 </article>
+
+                <!-- Service 3: Impermeabilización -->
                 <article class="service-card">
                     <div class="service-image">
-                        <img src="/public/images/services/Promo.jpg" alt="Promociones" loading="lazy" width="400" height="250">
+                        <img src="/public/images/services/Cama.jpg" alt="Impermeabilización" loading="lazy" width="400" height="250">
                     </div>
                     <div class="service-content">
-                        <h3>Promociones</h3>
-                        <p>Paquetes especiales y descuentos exclusivos</p>
+                        <h3>Impermeabilización de Telas</h3>
+                        <p>Protección contra líquidos y manchas</p>
                         <div class="service-details">
-                            <p>Aprovecha nuestras ofertas especiales diseñadas para brindarte el mejor valor. Ofrecemos paquetes combinados, descuentos por volumen, programa de referidos y promociones estacionales.</p>
+                            <p>Aplicación de productos impermeabilizantes que protegen tus muebles contra derrames y manchas futuras.</p>
                             <ul>
-                                <li>Combo sofá + colchón: 20% descuento</li>
-                                <li>3x2 en limpieza de sillas</li>
-                                <li>10% descuento para clientes frecuentes</li>
-                                <li>Servicio gratis por cada 5 referidos</li>
+                                <li>Protección contra líquidos</li>
+                                <li>Facilita limpieza futura</li>
+                                <li>No altera textura ni color</li>
+                                <li>Durabilidad extendida</li>
                             </ul>
                         </div>
                         <div class="service-footer">
-                            <span class="price">Ver ofertas</span>
-                            <button class="service-link">Ver más</button>
+                            <span class="price">Consultar</span>
+                            <button class="service-link" aria-label="Ver más detalles de Impermeabilización">Ver más</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Service 4: Tratamiento Enzimático -->
+                <article class="service-card">
+                    <div class="service-image">
+                        <img src="/public/images/services/Promo.jpg" alt="Tratamiento Enzimático" loading="lazy" width="400" height="250">
+                    </div>
+                    <div class="service-content">
+                        <h3>Tratamiento Enzimático</h3>
+                        <p>Para eliminar olores y manchas difíciles</p>
+                        <div class="service-details">
+                            <p>Tratamiento especializado con enzimas que descomponen manchas orgánicas y eliminan olores persistentes.</p>
+                            <ul>
+                                <li>Elimina manchas orgánicas difíciles</li>
+                                <li>Neutraliza olores profundos</li>
+                                <li>Tratamiento seguro y efectivo</li>
+                                <li>Resultados duraderos</li>
+                            </ul>
+                        </div>
+                        <div class="service-footer">
+                            <span class="price">B/.20.00</span>
+                            <button class="service-link" aria-label="Ver más detalles de Tratamiento Enzimático">Ver más</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Service 5: Limpieza de Espacios -->
+                <article class="service-card">
+                    <div class="service-image">
+                        <img src="/public/images/services/Sofa.jpg" alt="Limpieza de Espacios" loading="lazy" width="400" height="250">
+                    </div>
+                    <div class="service-content">
+                        <h3>Limpieza General de Espacios</h3>
+                        <p>Casas, oficinas, escuelas, restaurantes y negocios</p>
+                        <div class="service-details">
+                            <p>Servicio profesional de limpieza general por metro cuadrado para todo tipo de espacios comerciales y residenciales.</p>
+                            <ul>
+                                <li>Casas/Apartamentos: B/.2.00–2.50/m²</li>
+                                <li>Oficinas: B/.2.50–3.00/m²</li>
+                                <li>Escuelas/Restaurantes/Negocios: B/.3.00–3.50/m²</li>
+                                <li>Servicio profesional garantizado</li>
+                            </ul>
+                        </div>
+                        <div class="service-footer">
+                            <span class="price">Desde B/.2.00/m²</span>
+                            <button class="service-link" aria-label="Ver más detalles de Limpieza de Espacios">Ver más</button>
                         </div>
                     </div>
                 </article>
@@ -246,22 +225,23 @@
                 <p>Resultados reales de nuestro trabajo profesional</p>
             </div>
             <div class="gallery-grid">
-                <div class="before-after-container" data-pair="silla1">
+                <!-- Before/After 1: Sillas -->
+                <div class="before-after-container">
                     <h3>Limpieza de Sillas</h3>
                     <div class="slider-wrapper">
                         <div class="image-pair">
                             <div class="before-image">
-                                <img src="/public/images/gallery/antes_silla1.jpg" alt="Silla antes de limpieza" loading="lazy" width="800" height="450">
+                                <img src="/public/images/gallery/antes_silla1.jpg" alt="Silla antes de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Antes</span>
                             </div>
                             <div class="after-image">
-                                <img src="/public/images/gallery/despues_silla1.jpg" alt="Silla después de limpieza" loading="lazy" width="800" height="450">
+                                <img src="/public/images/gallery/despues_silla1.jpg" alt="Silla después de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Después</span>
                             </div>
-                            <div class="slider-handle" data-slider="silla1">
+                            <div class="slider-handle" role="slider" aria-label="Comparar antes y después" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
                                 <div class="handle-line"></div>
                                 <div class="handle-button">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M8 9L5 12L8 15M16 9L19 12L16 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                     </svg>
                                 </div>
@@ -269,22 +249,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="before-after-container" data-pair="cama1">
+
+                <!-- Before/After 2: Colchones -->
+                <div class="before-after-container">
                     <h3>Limpieza de Colchones</h3>
                     <div class="slider-wrapper">
                         <div class="image-pair">
                             <div class="before-image">
-                                <img src="/public/images/gallery/antes_cama1.jpg" alt="Colchón antes de limpieza" loading="lazy" width="800" height="450">
+                                <img src="/public/images/gallery/antes_cama1.jpg" alt="Colchón antes de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Antes</span>
                             </div>
                             <div class="after-image">
-                                <img src="/public/images/gallery/despues_cama1.jpg" alt="Colchón después de limpieza" loading="lazy" width="800" height="450">
+                                <img src="/public/images/gallery/despues_cama1.jpg" alt="Colchón después de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Después</span>
                             </div>
-                            <div class="slider-handle" data-slider="cama1">
+                            <div class="slider-handle" role="slider" aria-label="Comparar antes y después" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
                                 <div class="handle-line"></div>
                                 <div class="handle-button">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M8 9L5 12L8 15M16 9L19 12L16 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                     </svg>
                                 </div>
@@ -292,22 +274,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="before-after-container" data-pair="silla2">
+
+                <!-- Before/After 3: Sillas (Second Set) -->
+                <div class="before-after-container">
                     <h3>Limpieza de Sillas</h3>
                     <div class="slider-wrapper">
                         <div class="image-pair">
                             <div class="before-image">
-                                <img src="/public/images/gallery/antes_silla2.jpg" alt="Silla antes de limpieza" loading="lazy" width="800" height="450">
+                                <img src="/public/images/gallery/antes_silla2.jpg" alt="Silla antes de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Antes</span>
                             </div>
                             <div class="after-image">
-                                <img src="/public/images/gallery/despues_silla2.jpg" alt="Silla después de limpieza" loading="lazy" width="800" height="450">
+                                <img src="/public/images/gallery/despues_silla2.jpg" alt="Silla después de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Después</span>
                             </div>
-                            <div class="slider-handle" data-slider="silla2">
+                            <div class="slider-handle" role="slider" aria-label="Comparar antes y después" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
                                 <div class="handle-line"></div>
                                 <div class="handle-button">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M8 9L5 12L8 15M16 9L19 12L16 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                     </svg>
                                 </div>
@@ -315,22 +299,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="before-after-container" data-pair="cama2">
+
+                <!-- Before/After 4: Colchones (Second Set) -->
+                <div class="before-after-container">
                     <h3>Limpieza de Colchones</h3>
                     <div class="slider-wrapper">
                         <div class="image-pair">
                             <div class="before-image">
-                                <img src="/public/images/gallery/antes_cama2.jpg" alt="Colchón antes de limpieza" loading="lazy" width="800" height="450">
+                                <img src="/public/images/gallery/antes_cama2.jpg" alt="Colchón antes de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Antes</span>
                             </div>
                             <div class="after-image">
-                                <img src="/public/images/gallery/despues_cama2.jpg" alt="Colchón después de limpieza" loading="lazy" width="800" height="450">
+                                <img src="/public/images/gallery/despues_cama2.jpg" alt="Colchón después de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Después</span>
                             </div>
-                            <div class="slider-handle" data-slider="cama2">
+                            <div class="slider-handle" role="slider" aria-label="Comparar antes y después" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
                                 <div class="handle-line"></div>
                                 <div class="handle-button">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M8 9L5 12L8 15M16 9L19 12L16 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                     </svg>
                                 </div>
@@ -338,22 +324,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="before-after-container" data-pair="sofa1">
+
+                <!-- Before/After 5: Sofás -->
+                <div class="before-after-container">
                     <h3>Limpieza de Sofás</h3>
                     <div class="slider-wrapper">
                         <div class="image-pair">
                             <div class="before-image">
-                                <img src="/public/images/gallery/antes_sofa1.jpg" alt="Sofá antes de limpieza" loading="lazy" width="800" height="450">
+                                <img src="/public/images/gallery/antes_sofa1.jpg" alt="Sofá antes de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Antes</span>
                             </div>
                             <div class="after-image">
-                                <img src="/public/images/gallery/despues_sofa1.jpg" alt="Sofá después de limpieza" loading="lazy" width="800" height="450">
+                                <img src="/public/images/gallery/despues_sofa1.jpg" alt="Sofá después de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Después</span>
                             </div>
-                            <div class="slider-handle" data-slider="sofa1">
+                            <div class="slider-handle" role="slider" aria-label="Comparar antes y después" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
                                 <div class="handle-line"></div>
                                 <div class="handle-button">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M8 9L5 12L8 15M16 9L19 12L16 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                                     </svg>
                                 </div>
@@ -391,17 +379,18 @@
                     </div>
                 </div>
                 <form class="contact-form" id="contact-form">
-                    <input type="text" name="name" placeholder="Tu nombre" required>
-                    <input type="tel" name="phone" placeholder="Tu teléfono" required>
-                    <select name="service" required>
+                    <input type="text" name="name" placeholder="Tu nombre" required aria-label="Nombre completo">
+                    <input type="tel" name="phone" placeholder="Tu teléfono" required aria-label="Número de teléfono">
+                    <select name="service" required aria-label="Tipo de servicio">
                         <option value="">Selecciona un servicio</option>
-                        <option value="sofa">Limpieza de Sofás</option>
-                        <option value="colchon">Limpieza de Colchones</option>
-                        <option value="sillas">Limpieza de Sillas</option>
-                        <option value="cuero">Limpieza de Cuero</option>
+                        <option value="tapiceria-tela">Tapicería en Tela</option>
+                        <option value="tapiceria-cuero">Tapicería en Cuero</option>
+                        <option value="limpieza-espacios">Limpieza de Espacios</option>
+                        <option value="impermeabilizacion">Impermeabilización</option>
+                        <option value="tratamiento-enzimatico">Tratamiento Enzimático</option>
                         <option value="otro">Otro Servicio</option>
                     </select>
-                    <textarea name="message" placeholder="Mensaje adicional (opcional)" rows="4"></textarea>
+                    <textarea name="message" placeholder="Mensaje adicional (opcional)" rows="4" aria-label="Mensaje adicional"></textarea>
                     <button type="submit" class="btn-submit">Enviar Solicitud</button>
                 </form>
             </div>
@@ -413,20 +402,20 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <img src="/public/images/MicroClean_Compact.jpg" alt="MicroClean" class="footer-logo" width="100" height="100">
+                    <img src="/public/images/MicroClean_Compact.jpg" alt="MicroClean logo" class="footer-logo" width="100" height="100" loading="lazy">
                     <p>Servicios profesionales de limpieza con altos estándares de calidad.</p>
                 </div>
                 <div class="footer-services">
                     <h4>Servicios</h4>
-                    <a href="#servicios">Limpieza de Sofás</a>
-                    <a href="#servicios">Limpieza de Colchones</a>
-                    <a href="#servicios">Limpieza de Sillas</a>
-                    <a href="#servicios">Limpieza de Cuero</a>
+                    <a href="cotizador.html">Cotizador</a>
+                    <a href="#servicios">Tapicería en Tela</a>
+                    <a href="#servicios">Tapicería en Cuero</a>
+                    <a href="#servicios">Limpieza de Espacios</a>
                 </div>
                 <div class="footer-contact">
                     <h4>Contacto Rápido</h4>
-                    <a href="https://wa.me/50764177111" target="_blank" rel="noopener" class="footer-whatsapp">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <a href="https://wa.me/50764177111" target="_blank" rel="noopener noreferrer" class="footer-whatsapp">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
                         </svg>
                         WhatsApp
@@ -436,11 +425,6 @@
             </div>
             <div class="footer-bottom">
                 <p>&copy; <span id="year">2024</span> MicroClean. Todos los derechos reservados.</p>
-                <div class="footer-links">
-                    <a href="#">Términos</a>
-                    <span>·</span>
-                    <a href="#">Privacidad</a>
-                </div>
             </div>
         </div>
     </footer>
@@ -448,14 +432,14 @@
     <!-- WhatsApp FAB -->
     <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotización." 
        target="_blank" 
-       rel="noopener" 
+       rel="noopener noreferrer" 
        class="whatsapp-fab"
        aria-label="Chatear por WhatsApp">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
         </svg>
     </a>
 
-    <script src="app.js" defer></script>
+    <script src="app.js"></script>
 </body>
 </html>
