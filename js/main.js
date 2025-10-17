@@ -158,20 +158,26 @@
         });
     });
     
-    // ===== SERVICE CARDS EXPAND =====
+    // ===== SERVICE CARDS EXPAND - ENTIRE CARD CLICKABLE =====
     const serviceCards = document.querySelectorAll('.service-card');
-    
+
     serviceCards.forEach(card => {
         const button = card.querySelector('.service-link');
-        
-        if (button) {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const isExpanded = card.classList.contains('expanded');
-                card.classList.toggle('expanded');
+
+        // Make entire card clickable
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', function(e) {
+            // Prevent expanding if clicking on links
+            if (e.target.tagName === 'A' && e.target !== button) {
+                return;
+            }
+            e.preventDefault();
+            const isExpanded = card.classList.contains('expanded');
+            card.classList.toggle('expanded');
+            if (button) {
                 button.textContent = isExpanded ? 'Ver más' : 'Ver menos';
-            });
-        }
+            }
+        });
     });
     
     // ===== BEFORE/AFTER SLIDER - PERFECT VERSION =====
