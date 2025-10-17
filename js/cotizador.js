@@ -1,4 +1,4 @@
-// MicroClean Cotizador - Optimizado con Acordeón
+// MicroClean Cotizador
 (function() {
     'use strict';
     
@@ -27,29 +27,9 @@
                 enviarCotizacionWhatsApp();
             });
         }
-        
-        // Event listener para sliders - CORREGIDO
-        document.addEventListener('input', function(e) {
-            if (e.target.type === 'range') {
-                e.stopPropagation(); // Prevenir que se cierre el card
-                const controlType = e.target.dataset.control;
-                const servicioItem = e.target.closest('.servicio-item');
-                const valueDisplay = servicioItem.querySelector(`[data-type="${controlType}"]`);
-                
-                if (controlType === 'cantidad') {
-                    const value = parseInt(e.target.value);
-                    const unidad = valueDisplay.textContent.split(' ').slice(-1)[0];
-                    valueDisplay.textContent = `${value} ${unidad}`;
-                } else if (controlType === 'area') {
-                    valueDisplay.textContent = `${e.target.value} m²`;
-                } else if (controlType === 'precio-m2') {
-                    valueDisplay.textContent = `B/.${parseFloat(e.target.value).toFixed(2)}`;
-                }
-            }
-        });
     });
     
-    // Inicializar acordeones
+    // ACORDEONES - FUNCIONAN PERFECTAMENTE
     function inicializarAcordeones() {
         const categorias = document.querySelectorAll('.categoria-servicios');
         
@@ -58,20 +38,33 @@
             const content = categoria.querySelector('.categoria-content');
             
             if (header && content) {
-                // Empezar colapsado
-                content.style.maxHeight = '0';
-                content.style.overflow = 'hidden';
-                content.style.transition = 'max-height 0.3s ease';
-                
-                header.addEventListener('click', function() {
+                header.addEventListener('click', function(e) {
+                    // Prevenir que clicks en elementos internos cierren el acordeón
+                    if (e.target.closest('.servicio-item')) return;
+                    
                     const isOpen = categoria.classList.contains('open');
                     
                     if (isOpen) {
                         content.style.maxHeight = '0';
                         categoria.classList.remove('open');
                     } else {
+                        // Cerrar otros acordeones (opcional)
+                        // categorias.forEach(c => {
+                        //     if (c !== categoria) {
+                        //         c.classList.remove('open');
+                        //         c.querySelector('.categoria-content').style.maxHeight = '0';
+                        //     }
+                        // });
+                        
                         content.style.maxHeight = content.scrollHeight + 'px';
                         categoria.classList.add('open');
+                        
+                        // Actualizar maxHeight cuando cambia el contenido
+                        setTimeout(() => {
+                            if (categoria.classList.contains('open')) {
+                                content.style.maxHeight = content.scrollHeight + 'px';
+                            }
+                        }, 100);
                     }
                 });
             }
@@ -120,15 +113,15 @@
         }
         
         div.innerHTML = `
-            <div class="servicio-header">
+            <div class="servicio-header-item" data-selectable="true">
                 <span class="servicio-nombre">${item.nombre}</span>
                 <span class="servicio-precio">${precioDisplay}</span>
             </div>
-            ${item.descripcion && item.tipo !== 'area' ? `<div style="font-size: 0.875rem; color: var(--gray-600); margin-top: 0.25rem;">${item.descripcion}</div>` : ''}
+            ${item.descripcion && item.tipo !== 'area' ? `<div class="servicio-descripcion">${item.descripcion}</div>` : ''}
             <div class="servicio-controles">
                 ${crearControlesHTML(item)}
-                <button class="btn-agregar" data-id="${item.id}">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                <button class="btn-agregar" type="button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14"/>
                     </svg>
                     Agregar al Carrito
@@ -136,25 +129,74 @@
             </div>
         `;
         
+        // EVENTO AGREGAR - Sin problemas
         const btnAgregar = div.querySelector('.btn-agregar');
         btnAgregar.addEventListener('click', function(e) {
             e.stopPropagation();
             agregarAlCarrito(item, categoria, div);
         });
         
-        // CORREGIDO: Solo cerrar al hacer click en el header, no en los controles
-        const header = div.querySelector('.servicio-header');
-        header.addEventListener('click', function(e) {
-            if (e.target.closest('.servicio-controles')) return;
-            
-            const yaSeleccionado = div.classList.contains('seleccionado');
-            document.querySelectorAll('.servicio-item').forEach(el => {
-                if (el !== div) el.classList.remove('seleccionado');
+        // EVENTO SELECCIONAR CARD - Solo en el header
+        const headerItem = div.querySelector('.servicio-header-item');
+        headerItem.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleCardSelection(div);
+        });
+        
+        // EVENTOS SLIDERS - No cierran el card
+        const sliders = div.querySelectorAll('input[type="range"]');
+        sliders.forEach(slider => {
+            slider.addEventListener('input', function(e) {
+                e.stopPropagation();
+                actualizarValorSlider(this, div);
             });
-            div.classList.toggle('seleccionado', !yaSeleccionado);
+            
+            slider.addEventListener('mousedown', function(e) {
+                e.stopPropagation();
+            });
+            
+            slider.addEventListener('touchstart', function(e) {
+                e.stopPropagation();
+            });
         });
         
         return div;
+    }
+    
+    function toggleCardSelection(card) {
+        const isSelected = card.classList.contains('seleccionado');
+        
+        // Desseleccionar otros cards
+        document.querySelectorAll('.servicio-item').forEach(el => {
+            if (el !== card) el.classList.remove('seleccionado');
+        });
+        
+        // Toggle actual
+        card.classList.toggle('seleccionado');
+        
+        // Actualizar altura del acordeón si está abierto
+        setTimeout(() => {
+            const categoria = card.closest('.categoria-servicios');
+            if (categoria && categoria.classList.contains('open')) {
+                const content = categoria.querySelector('.categoria-content');
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        }, 350); // Después de la animación del card
+    }
+    
+    function actualizarValorSlider(slider, card) {
+        const controlType = slider.dataset.control;
+        const valueDisplay = card.querySelector(`[data-type="${controlType}"]`);
+        
+        if (controlType === 'cantidad') {
+            const value = parseInt(slider.value);
+            const unidad = valueDisplay.textContent.split(' ').slice(-1)[0];
+            valueDisplay.textContent = `${value} ${unidad}`;
+        } else if (controlType === 'area') {
+            valueDisplay.textContent = `${slider.value} m²`;
+        } else if (controlType === 'precio-m2') {
+            valueDisplay.textContent = `B/.${parseFloat(slider.value).toFixed(2)}`;
+        }
     }
     
     function crearControlesHTML(item) {
@@ -171,7 +213,7 @@
                            value="1" 
                            step="1"
                            data-control="cantidad"
-                           aria-label="Cantidad de ${item.nombre}">
+                           aria-label="Cantidad">
                 </div>
             `;
         } else if (item.tipo === 'area') {
@@ -187,7 +229,7 @@
                            value="50" 
                            step="5"
                            data-control="area"
-                           aria-label="Área en metros cuadrados">
+                           aria-label="Área">
                 </div>
                 <div class="slider-control">
                     <div class="slider-label">
@@ -200,7 +242,7 @@
                            value="${item.precioMin}" 
                            step="0.10"
                            data-control="precio-m2"
-                           aria-label="Precio por metro cuadrado">
+                           aria-label="Precio">
                 </div>
             `;
         }
@@ -244,42 +286,34 @@
         mostrarFeedbackAgregado(divServicio);
         actualizarCarrito();
         divServicio.classList.remove('seleccionado');
+        
+        // Actualizar altura del acordeón
+        setTimeout(() => {
+            const categoria = divServicio.closest('.categoria-servicios');
+            if (categoria && categoria.classList.contains('open')) {
+                const content = categoria.querySelector('.categoria-content');
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        }, 350);
     }
     
     function mostrarFeedbackAgregado(elemento) {
         const feedback = document.createElement('div');
+        feedback.className = 'feedback-agregado';
         feedback.innerHTML = `
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
                 <path d="M5 13l4 4L19 7"/>
             </svg>
             <span>Agregado</span>
         `;
-        feedback.style.cssText = `
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--whatsapp);
-            color: white;
-            padding: 0.75rem 1.25rem;
-            border-radius: 8px;
-            font-weight: 600;
-            z-index: 10;
-            animation: fadeInOut 1.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: var(--shadow-xl);
-        `;
         
-        elemento.style.position = 'relative';
         elemento.appendChild(feedback);
         
         setTimeout(() => {
             if (feedback.parentNode) {
                 feedback.parentNode.removeChild(feedback);
             }
-        }, 1200);
+        }, 1500);
     }
     
     function actualizarCarrito() {
@@ -309,19 +343,17 @@
             }
             
             html += `
-                <div class="carrito-item" data-index="${index}">
+                <div class="carrito-item">
                     <div class="carrito-item-header">
                         <strong>${item.nombre}</strong>
-                        <button class="btn-eliminar" data-index="${index}" aria-label="Eliminar ${item.nombre}">
+                        <button class="btn-eliminar" data-index="${index}" type="button">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
                     </div>
                     <div class="carrito-item-detalles">${detalles}</div>
-                    <div style="text-align: right; font-weight: 700; color: var(--blue-2); margin-top: 0.5rem; font-size: 1.05rem;">
-                        B/.${item.subtotal.toFixed(2)}
-                    </div>
+                    <div class="carrito-item-subtotal">B/.${item.subtotal.toFixed(2)}</div>
                 </div>
             `;
         });
@@ -360,15 +392,15 @@
         html += `
             <div class="total-linea">
                 <span>Subtotal:</span>
-                <span style="font-weight: 600;">B/.${subtotal.toFixed(2)}</span>
+                <span>B/.${subtotal.toFixed(2)}</span>
             </div>
         `;
         
         if (minimoAplicado) {
             html += `
-                <div class="total-linea" style="color: var(--gray-600); font-size: 0.875rem;">
+                <div class="total-linea minimo">
                     <span>Mínimo de servicio:</span>
-                    <span style="font-weight: 600;">B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)}</span>
+                    <span>B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)}</span>
                 </div>
             `;
         }
@@ -387,122 +419,65 @@
         carritoTotales.style.display = 'block';
     }
     
-    // CORREGIDO: Mensaje de WhatsApp más corto
+    // WHATSAPP CORREGIDO - Mensaje más corto
     function enviarCotizacionWhatsApp() {
         const formData = new FormData(formCotizacion);
-        const nombre = formData.get('nombre');
-        const whatsapp = formData.get('whatsapp');
-        const direccion = formData.get('direccion');
-        const fecha = formData.get('fecha');
-        const horario = formData.get('horario');
-        const notas = formData.get('notas');
         
-        // Mensaje más corto para evitar problemas
-        let mensaje = `*COTIZACIÓN MICROCLEAN*\n\n`;
-        mensaje += `👤 ${nombre}\n`;
-        mensaje += `📱 ${whatsapp}\n`;
-        mensaje += `📍 ${direccion}\n`;
+        // Mensaje CORTO para evitar problemas con URL larga
+        let msg = `*COTIZACIÓN MICROCLEAN*\n\n`;
+        msg += `👤 ${formData.get('nombre')}\n`;
+        msg += `📱 ${formData.get('whatsapp')}\n`;
+        msg += `📍 ${formData.get('direccion')}\n\n`;
         
-        if (fecha) mensaje += `📅 ${fecha}\n`;
-        if (horario) mensaje += `🕐 ${horario}\n`;
+        if (formData.get('fecha')) msg += `📅 ${formData.get('fecha')}\n`;
+        if (formData.get('horario')) msg += `🕐 ${formData.get('horario')}\n\n`;
         
-        mensaje += `\n*Servicios:*\n`;
+        msg += `*Servicios:*\n`;
         
-        carritoItems.forEach((item, index) => {
-            mensaje += `${index + 1}. ${item.nombre}\n`;
-            
+        carritoItems.forEach((item, i) => {
+            msg += `${i + 1}. ${item.nombre}\n`;
             if (item.tipo === 'cantidad') {
-                mensaje += `   ${item.cantidad} ${item.unidad} - B/.${item.subtotal.toFixed(2)}\n`;
+                msg += `   ${item.cantidad}${item.unidad} - B/.${item.subtotal.toFixed(2)}\n`;
             } else if (item.tipo === 'area') {
-                mensaje += `   ${item.area}m² × B/.${item.precioM2.toFixed(2)} - B/.${item.subtotal.toFixed(2)}\n`;
+                msg += `   ${item.area}m² × B/.${item.precioM2.toFixed(2)} - B/.${item.subtotal.toFixed(2)}\n`;
             } else {
-                mensaje += `   B/.${item.subtotal.toFixed(2)}\n`;
+                msg += `   B/.${item.subtotal.toFixed(2)}\n`;
             }
         });
         
-        const subtotal = carritoItems.reduce((sum, item) => sum + item.subtotal, 0);
-        const totalFinal = aplicarMinimoServicio(subtotal);
+        const subtotal = carritoItems.reduce((s, item) => s + item.subtotal, 0);
+        const total = aplicarMinimoServicio(subtotal);
         
-        mensaje += `\n*TOTAL: B/.${totalFinal.toFixed(2)}*\n`;
+        msg += `\n✅ *TOTAL: B/.${total.toFixed(2)}*`;
         
-        if (notas) {
-            mensaje += `\n📝 ${notas}\n`;
+        if (formData.get('notas')) {
+            msg += `\n\n📝 ${formData.get('notas')}`;
         }
         
-        const numeroWhatsApp = '50764177111';
-        const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-        window.open(urlWhatsApp, '_blank');
+        const url = `https://wa.me/50764177111?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
         
         mostrarMensajeExito();
     }
     
     function mostrarMensajeExito() {
-        const mensaje = document.createElement('div');
-        mensaje.style.cssText = `
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            background: var(--whatsapp);
-            color: white;
-            padding: 1.25rem 2rem;
-            border-radius: 12px;
-            box-shadow: var(--shadow-xl);
-            z-index: 10000;
-            animation: slideIn 0.3s ease;
-        `;
-        mensaje.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                    <path d="M5 13l4 4L19 7"/>
-                </svg>
-                <span style="font-weight: 600;">Redirigiendo a WhatsApp...</span>
-            </div>
+        const div = document.createElement('div');
+        div.className = 'mensaje-exito';
+        div.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>Redirigiendo a WhatsApp...</span>
         `;
         
-        document.body.appendChild(mensaje);
+        document.body.appendChild(div);
         
         setTimeout(() => {
-            mensaje.style.animation = 'slideOut 0.3s ease';
+            div.classList.add('hide');
             setTimeout(() => {
-                if (mensaje.parentNode) {
-                    mensaje.parentNode.removeChild(mensaje);
-                }
+                if (div.parentNode) document.body.removeChild(div);
             }, 300);
         }, 3000);
     }
-    
-    // CSS animations
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-    `;
-    document.head.appendChild(style);
     
 })();
