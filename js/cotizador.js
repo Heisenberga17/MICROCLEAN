@@ -1,4 +1,4 @@
-// MicroClean Cotizador
+// MicroClean Cotizador - FIXED VERSION
 (function() {
     'use strict';
     
@@ -275,7 +275,7 @@
         return '';
     }
     
-    // ==================== AGREGAR AL CARRITO ====================
+    // ==================== AGREGAR AL CARRITO - FIXED FOR MULTIPLE SAME ITEMS ====================
     function agregarAlCarrito(item, categoria, divServicio) {
         const controles = divServicio.querySelector('.servicio-controles');
         
@@ -284,7 +284,8 @@
             nombre: item.nombre,
             categoria: categoria,
             tipo: item.tipo,
-            precio: item.precio
+            precio: item.precio,
+            cantidadVeces: 1 // Track how many times this exact item is added
         };
         
         if (item.tipo === 'cantidad') {
@@ -300,17 +301,46 @@
             itemCarrito.unidad = 'm²';
             itemCarrito.subtotal = itemCarrito.area * itemCarrito.precioM2;
         } else {
+            // FIXED: For fixed-price items, check if item already exists
+            const existeIndex = carritoItems.findIndex(ci => ci.id === item.id && ci.tipo === 'fijo');
+            if (existeIndex >= 0) {
+                // Increment the quantity
+                carritoItems[existeIndex].cantidadVeces += 1;
+                carritoItems[existeIndex].subtotal = item.precio * carritoItems[existeIndex].cantidadVeces;
+                mostrarFeedbackAgregado(divServicio);
+                actualizarCarrito();
+                divServicio.classList.remove('seleccionado');
+                setTimeout(() => updateAllOpenAccordions(), 100);
+                return;
+            }
             itemCarrito.subtotal = item.precio;
         }
         
-        // Check if item already exists
-        const existeIndex = carritoItems.findIndex(ci => ci.id === item.id);
-        if (existeIndex >= 0) {
-            carritoItems[existeIndex] = itemCarrito;
-        } else {
-            carritoItems.push(itemCarrito);
+        // Check if item with same configuration already exists (for cantidad/area types)
+        if (item.tipo !== 'fijo') {
+            const existeIndex = carritoItems.findIndex(ci => {
+                if (ci.id !== item.id) return false;
+                if (item.tipo === 'cantidad') {
+                    return ci.cantidad === itemCarrito.cantidad;
+                } else if (item.tipo === 'area') {
+                    return ci.area === itemCarrito.area && ci.precioM2 === itemCarrito.precioM2;
+                }
+                return false;
+            });
+            
+            if (existeIndex >= 0) {
+                carritoItems[existeIndex].cantidadVeces += 1;
+                carritoItems[existeIndex].subtotal = carritoItems[existeIndex].subtotal * carritoItems[existeIndex].cantidadVeces / (carritoItems[existeIndex].cantidadVeces - 1);
+                mostrarFeedbackAgregado(divServicio);
+                actualizarCarrito();
+                divServicio.classList.remove('seleccionado');
+                setTimeout(() => updateAllOpenAccordions(), 100);
+                return;
+            }
         }
         
+        // Add new item
+        carritoItems.push(itemCarrito);
         mostrarFeedbackAgregado(divServicio);
         actualizarCarrito();
         divServicio.classList.remove('seleccionado');
@@ -343,7 +373,7 @@
         }, 1500);
     }
     
-    // ==================== ACTUALIZAR CARRITO ====================
+    // ==================== ACTUALIZAR CARRITO - FIXED TO SHOW QUANTITY ====================
     function actualizarCarrito() {
         if (carritoItems.length === 0) {
             carritoContenido.innerHTML = `
@@ -362,6 +392,13 @@
         let html = '';
         carritoItems.forEach((item, index) => {
             let detalles = '';
+            let nombreDisplay = item.nombre;
+            
+            // FIXED: Show quantity multiplier
+            if (item.cantidadVeces > 1) {
+                nombreDisplay = `${item.cantidadVeces}x ${item.nombre}`;
+            }
+            
             if (item.tipo === 'cantidad') {
                 detalles = `${item.cantidad} ${item.unidad} × B/.${item.precio.toFixed(2)}`;
             } else if (item.tipo === 'area') {
@@ -373,7 +410,7 @@
             html += `
                 <div class="carrito-item">
                     <div class="carrito-item-header">
-                        <strong>${item.nombre}</strong>
+                        <strong>${nombreDisplay}</strong>
                         <button class="btn-eliminar" data-index="${index}" type="button" aria-label="Eliminar">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M6 18L18 6M6 6l12 12"/>
@@ -451,26 +488,31 @@
         carritoTotales.style.display = 'block';
     }
     
-    // ==================== ENVIAR COTIZACIÓN WHATSAPP ====================
+    // ==================== ENVIAR COTIZACIÓN WHATSAPP - FIXED NO EMOJIS ====================
     function enviarCotizacionWhatsApp() {
         const formData = new FormData(formCotizacion);
         
-        let msg = `*COTIZACIÓN MICROCLEAN*\n\n`;
-        msg += `👤 ${formData.get('nombre')}\n`;
-        msg += `📱 ${formData.get('whatsapp')}\n`;
-        msg += `📍 ${formData.get('direccion')}\n\n`;
+        let msg = `*COTIZACION MICROCLEAN*\n\n`;
+        msg += `- Nombre: ${formData.get('nombre')}\n`;
+        msg += `- WhatsApp: ${formData.get('whatsapp')}\n`;
+        msg += `- Direccion: ${formData.get('direccion')}\n\n`;
         
-        if (formData.get('fecha')) msg += `📅 ${formData.get('fecha')}\n`;
-        if (formData.get('horario')) msg += `🕐 ${formData.get('horario')}\n\n`;
+        if (formData.get('fecha')) msg += `- Fecha: ${formData.get('fecha')}\n`;
+        if (formData.get('horario')) msg += `- Horario: ${formData.get('horario')}\n\n`;
         
         msg += `*Servicios:*\n`;
         
         carritoItems.forEach((item, i) => {
-            msg += `${i + 1}. ${item.nombre}\n`;
+            let nombreConCantidad = item.nombre;
+            if (item.cantidadVeces > 1) {
+                nombreConCantidad = `${item.cantidadVeces}x ${item.nombre}`;
+            }
+            
+            msg += `${i + 1}. ${nombreConCantidad}\n`;
             if (item.tipo === 'cantidad') {
                 msg += `   ${item.cantidad}${item.unidad} - B/.${item.subtotal.toFixed(2)}\n`;
             } else if (item.tipo === 'area') {
-                msg += `   ${item.area}m² × B/.${item.precioM2.toFixed(2)} - B/.${item.subtotal.toFixed(2)}\n`;
+                msg += `   ${item.area}m² x B/.${item.precioM2.toFixed(2)} - B/.${item.subtotal.toFixed(2)}\n`;
             } else {
                 msg += `   B/.${item.subtotal.toFixed(2)}\n`;
             }
@@ -479,10 +521,10 @@
         const subtotal = carritoItems.reduce((s, item) => s + item.subtotal, 0);
         const total = aplicarMinimoServicio(subtotal);
         
-        msg += `\n✅ *TOTAL: B/.${total.toFixed(2)}*`;
+        msg += `\n*TOTAL: B/.${total.toFixed(2)}*`;
         
         if (formData.get('notas')) {
-            msg += `\n\n📝 ${formData.get('notas')}`;
+            msg += `\n\n- Notas: ${formData.get('notas')}`;
         }
         
         const url = `https://wa.me/50764177111?text=${encodeURIComponent(msg)}`;
