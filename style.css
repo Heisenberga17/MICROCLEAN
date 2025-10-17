@@ -1242,7 +1242,8 @@ footer {
 .servicio-item.seleccionado {
     background: linear-gradient(to right, rgba(0, 180, 216, 0.05), rgba(9, 101, 198, 0.05));
     border-left: 4px solid var(--blue-2);
-    padding-left: calc(var(--space-lg) - 4px);
+    padding-left: var(--space-lg);
+    margin-left: 4px;
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
