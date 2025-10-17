@@ -722,22 +722,44 @@ header.scrolled {
 .image-pair {
     position: relative;
     width: 100%;
-    height: 0;
-    padding-bottom: 50%; /* 2:1 aspect ratio - shows full transformation */
+    min-height: 300px;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Adjust on tablet and desktop */
-@media (min-width: 768px) {
+/* Portrait mobile - taller aspect ratio */
+@media (max-width: 767px) and (orientation: portrait) {
     .image-pair {
-        padding-bottom: 50%; /* Wider view on tablets */
+        aspect-ratio: 4 / 3;
+        min-height: 250px;
     }
 }
 
+/* Landscape mobile - wider aspect ratio */
+@media (max-width: 767px) and (orientation: landscape) {
+    .image-pair {
+        aspect-ratio: 21 / 9;
+        min-height: 200px;
+    }
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .image-pair {
+        aspect-ratio: 16 / 9;
+        min-height: 350px;
+    }
+}
+
+/* Desktop */
 @media (min-width: 1024px) {
     .image-pair {
-        padding-bottom: 45%; /* Ultra-wide for desktop - maximum visibility */
+        aspect-ratio: 21 / 9;
+        min-height: 400px;
     }
 }
 
@@ -748,6 +770,9 @@ header.scrolled {
     left: 0;
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .before-image img,
@@ -755,7 +780,7 @@ header.scrolled {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
+    object-position: center center;
     display: block;
     pointer-events: none;
     user-select: none;
@@ -1124,6 +1149,8 @@ footer {
     user-select: none;
     background: var(--gray-50);
     transition: background 0.2s ease;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    overflow: hidden;
 }
 
 .categoria-header:hover {
@@ -1132,6 +1159,7 @@ footer {
 
 .categoria-servicios.open .categoria-header {
     background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .categoria-titulo {
