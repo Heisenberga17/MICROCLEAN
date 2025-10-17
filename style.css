@@ -1059,14 +1059,15 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow-xl);
-    transition: all 0.2s ease;
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 998;
 }
 
 .whatsapp-fab:hover {
     background: var(--whatsapp-hover);
-    transform: scale(1.1);
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5);
 }
 
 /* ==================== COTIZADOR PAGE ==================== */
