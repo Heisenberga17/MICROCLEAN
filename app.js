@@ -1,4 +1,4 @@
-// MicroClean
+// MicroClean - Main Application JavaScript - COMPLETE
 (function() {
     'use strict';
     
@@ -25,7 +25,9 @@
         const shouldBeScrolled = window.scrollY > 50;
         if (shouldBeScrolled !== scrolled) {
             scrolled = shouldBeScrolled;
-            header.classList.toggle('scrolled', scrolled);
+            if (header) {
+                header.classList.toggle('scrolled', scrolled);
+            }
         }
     }
     
@@ -164,7 +166,7 @@
         }
     });
     
-    // ===== BEFORE/AFTER SLIDER - FIXED =====
+    // ===== BEFORE/AFTER SLIDER - PERFECT VERSION =====
     const sliders = document.querySelectorAll('.before-after-container');
     
     sliders.forEach(container => {
@@ -307,7 +309,7 @@
         }
     }
     
-    // ===== LAZY LOAD IMAGES - FIXED =====
+    // ===== LAZY LOAD IMAGES =====
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
