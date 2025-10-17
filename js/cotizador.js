@@ -1,201 +1,518 @@
-<!DOCTYPE html>
-<html lang="es-PA">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Cotizador interactivo MicroClean - Calcula tu presupuesto de limpieza profesional">
-    <meta name="theme-color" content="#0965C6">
-    <title>Cotizador - MicroClean</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <!-- Header -->
-    <header id="header">
-        <div class="container">
-            <div class="header-content">
-                <a href="index.html" class="logo-link" aria-label="MicroClean - Inicio">
-                    <img src="/public/images/MicroClean_Main.jpg" alt="MicroClean" class="logo" width="150" height="50">
-                    <span class="logo-text">MicroClean</span>
-                </a>
-                <nav class="nav-menu">
-                    <a href="cotizador.html" class="nav-link active">Cotizador</a>
-                    <a href="index.html#servicios" class="nav-link">Servicios</a>
-                    <a href="index.html#galeria" class="nav-link">Galería</a>
-                    <a href="index.html#contacto" class="nav-link">Contacto</a>
-                    <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotización." 
-                       target="_blank" 
-                       rel="noopener" 
-                       class="btn-whatsapp-header"
-                       aria-label="Chatear por WhatsApp">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                        </svg>
-                        <span>WhatsApp</span>
-                    </a>
-                </nav>
-                <button class="menu-toggle" aria-label="Menú" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+// MicroClean Cotizador - Lógica del Carrito y Generación de Cotización
+(function() {
+    'use strict';
+    
+    // Estado del carrito (en memoria, NO localStorage)
+    let carritoItems = [];
+    
+    // Referencias DOM
+    const serviciosTela = document.getElementById('servicios-tela');
+    const serviciosCuero = document.getElementById('servicios-cuero');
+    const serviciosEspacios = document.getElementById('servicios-espacios');
+    const serviciosAdicionales = document.getElementById('servicios-adicionales');
+    const carritoContenido = document.getElementById('carrito-contenido');
+    const carritoTotales = document.getElementById('carrito-totales');
+    const formularioSeccion = document.getElementById('formulario-seccion');
+    const formCotizacion = document.getElementById('form-cotizacion');
+    
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', function() {
+        renderizarServicios();
+        actualizarCarrito();
+        
+        // Auto-update año
+        const yearSpan = document.getElementById('year');
+        if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+        
+        // Form submit
+        if (formCotizacion) {
+            formCotizacion.addEventListener('submit', function(e) {
+                e.preventDefault();
+                enviarCotizacionWhatsApp();
+            });
+        }
+    });
+    
+    // Renderizar servicios por categoría
+    function renderizarServicios() {
+        if (serviciosTela) {
+            SERVICIOS_CATALOGO.tapiceriaTela.items.forEach(item => {
+                serviciosTela.appendChild(crearServicioHTML(item, 'tapiceriaTela'));
+            });
+        }
+        
+        if (serviciosCuero) {
+            SERVICIOS_CATALOGO.tapiceriaCuero.items.forEach(item => {
+                serviciosCuero.appendChild(crearServicioHTML(item, 'tapiceriaCuero'));
+            });
+        }
+        
+        if (serviciosEspacios) {
+            SERVICIOS_CATALOGO.limpiezaEspacios.items.forEach(item => {
+                serviciosEspacios.appendChild(crearServicioHTML(item, 'limpiezaEspacios'));
+            });
+        }
+        
+        if (serviciosAdicionales) {
+            SERVICIOS_CATALOGO.serviciosAdicionales.items.forEach(item => {
+                serviciosAdicionales.appendChild(crearServicioHTML(item, 'serviciosAdicionales'));
+            });
+        }
+    }
+    
+    // Crear HTML de servicio individual
+    function crearServicioHTML(item, categoria) {
+        const div = document.createElement('div');
+        div.className = 'servicio-item';
+        div.dataset.id = item.id;
+        div.dataset.categoria = categoria;
+        
+        let precioDisplay = '';
+        if (item.tipo === 'area') {
+            precioDisplay = item.descripcion || `B/.${item.precioMin.toFixed(2)} - ${item.precioMax.toFixed(2)}/${item.unidad}`;
+        } else if (item.tipo === 'cantidad') {
+            precioDisplay = `B/.${item.precio.toFixed(2)} ${item.unidad}`;
+        } else {
+            precioDisplay = `B/.${item.precio.toFixed(2)}`;
+        }
+        
+        div.innerHTML = `
+            <div class="servicio-header">
+                <span class="servicio-nombre">${item.nombre}</span>
+                <span class="servicio-precio">${precioDisplay}</span>
+            </div>
+            ${item.descripcion && item.tipo !== 'area' ? `<div style="font-size: 0.875rem; color: var(--gray-600); margin-top: 0.25rem;">${item.descripcion}</div>` : ''}
+            <div class="servicio-controles">
+                ${crearControlesHTML(item)}
+                <button class="btn-agregar" data-id="${item.id}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Agregar al Carrito
                 </button>
             </div>
-        </div>
-    </header>
-
-    <!-- Cotizador Container -->
-    <main class="cotizador-container">
-        <div class="cotizador-header">
-            <div class="container">
-                <h1>Cotizador Interactivo</h1>
-                <p>Selecciona los servicios que necesitas y obtén tu cotización al instante</p>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="cotizador-grid">
-                <!-- Panel de Servicios -->
-                <div class="servicios-panel">
-                    <h2>Selecciona tus Servicios</h2>
-                    
-                    <!-- Tapicería en Tela -->
-                    <div class="categoria-servicios">
-                        <h3>Limpieza de Tapicería en Tela</h3>
-                        <p>Limpieza de tapicería en tela: sofás, sillas, colchones, alfombras y más.</p>
-                        <div id="servicios-tela"></div>
+        `;
+        
+        // Event listeners
+        const btnAgregar = div.querySelector('.btn-agregar');
+        btnAgregar.addEventListener('click', function(e) {
+            e.stopPropagation();
+            agregarAlCarrito(item, categoria, div);
+        });
+        
+        div.addEventListener('click', function() {
+            // Toggle selección para mostrar controles
+            const yaSeleccionado = div.classList.contains('seleccionado');
+            document.querySelectorAll('.servicio-item').forEach(el => {
+                if (el !== div) el.classList.remove('seleccionado');
+            });
+            div.classList.toggle('seleccionado', !yaSeleccionado);
+        });
+        
+        return div;
+    }
+    
+    // Crear controles (sliders) según tipo de servicio
+    function crearControlesHTML(item) {
+        if (item.tipo === 'cantidad') {
+            return `
+                <div class="slider-control">
+                    <div class="slider-label">
+                        <span>Cantidad</span>
+                        <span class="slider-value" data-type="cantidad">1 ${item.unidad}</span>
                     </div>
-
-                    <!-- Tapicería en Cuero -->
-                    <div class="categoria-servicios">
-                        <h3>Limpieza de Tapicería en Cuero</h3>
-                        <p>Limpieza y tratamiento de cuero (limpieza, humectación y protección).</p>
-                        <div id="servicios-cuero"></div>
+                    <input type="range" 
+                           min="1" 
+                           max="20" 
+                           value="1" 
+                           step="1"
+                           data-control="cantidad"
+                           aria-label="Cantidad de ${item.nombre}">
+                </div>
+            `;
+        } else if (item.tipo === 'area') {
+            return `
+                <div class="slider-control">
+                    <div class="slider-label">
+                        <span>Área</span>
+                        <span class="slider-value" data-type="area">50 m²</span>
                     </div>
-
-                    <!-- Limpieza de Espacios -->
-                    <div class="categoria-servicios">
-                        <h3>Limpieza General de Espacios <span class="badge-nuevo">NUEVO</span></h3>
-                        <p>Limpieza profesional de casas, oficinas, escuelas, restaurantes y negocios por m².</p>
-                        <div id="servicios-espacios"></div>
+                    <input type="range" 
+                           min="10" 
+                           max="500" 
+                           value="50" 
+                           step="5"
+                           data-control="area"
+                           aria-label="Área en metros cuadrados">
+                </div>
+                <div class="slider-control">
+                    <div class="slider-label">
+                        <span>Precio por m²</span>
+                        <span class="slider-value" data-type="precio-m2">B/.${item.precioMin.toFixed(2)}</span>
                     </div>
-
-                    <!-- Servicios Adicionales -->
-                    <div class="categoria-servicios">
-                        <h3>Servicios Adicionales</h3>
-                        <div id="servicios-adicionales"></div>
+                    <input type="range" 
+                           min="${item.precioMin}" 
+                           max="${item.precioMax}" 
+                           value="${item.precioMin}" 
+                           step="0.10"
+                           data-control="precio-m2"
+                           aria-label="Precio por metro cuadrado">
+                </div>
+            `;
+        }
+        return '';
+    }
+    
+    // Agregar item al carrito
+    function agregarAlCarrito(item, categoria, divServicio) {
+        const controles = divServicio.querySelector('.servicio-controles');
+        
+        let itemCarrito = {
+            id: item.id,
+            nombre: item.nombre,
+            categoria: categoria,
+            tipo: item.tipo,
+            precio: item.precio
+        };
+        
+        // Leer valores de sliders
+        if (item.tipo === 'cantidad') {
+            const sliderCantidad = controles.querySelector('[data-control="cantidad"]');
+            itemCarrito.cantidad = parseInt(sliderCantidad.value);
+            itemCarrito.unidad = item.unidad;
+            itemCarrito.subtotal = item.precio * itemCarrito.cantidad;
+        } else if (item.tipo === 'area') {
+            const sliderArea = controles.querySelector('[data-control="area"]');
+            const sliderPrecioM2 = controles.querySelector('[data-control="precio-m2"]');
+            itemCarrito.area = parseInt(sliderArea.value);
+            itemCarrito.precioM2 = parseFloat(sliderPrecioM2.value);
+            itemCarrito.unidad = 'm²';
+            itemCarrito.subtotal = itemCarrito.area * itemCarrito.precioM2;
+        } else {
+            itemCarrito.subtotal = item.precio;
+        }
+        
+        // Verificar si ya existe en carrito
+        const existeIndex = carritoItems.findIndex(ci => ci.id === item.id);
+        if (existeIndex >= 0) {
+            carritoItems[existeIndex] = itemCarrito; // Actualizar
+        } else {
+            carritoItems.push(itemCarrito);
+        }
+        
+        // Feedback visual
+        mostrarFeedbackAgregado(divServicio);
+        
+        // Actualizar UI
+        actualizarCarrito();
+        divServicio.classList.remove('seleccionado');
+    }
+    
+    // Feedback visual al agregar
+    function mostrarFeedbackAgregado(elemento) {
+        const feedback = document.createElement('div');
+        feedback.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <path d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>Agregado</span>
+        `;
+        feedback.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--whatsapp);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 10;
+            animation: fadeInOut 1.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-xl);
+        `;
+        
+        elemento.style.position = 'relative';
+        elemento.appendChild(feedback);
+        
+        setTimeout(() => {
+            if (feedback.parentNode) {
+                feedback.parentNode.removeChild(feedback);
+            }
+        }, 1200);
+    }
+    
+    // Actualizar vista del carrito
+    function actualizarCarrito() {
+        if (carritoItems.length === 0) {
+            carritoContenido.innerHTML = `
+                <div class="carrito-vacio">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9zM4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
+                    </svg>
+                    <p>Agrega servicios para comenzar tu cotización</p>
+                </div>
+            `;
+            carritoTotales.style.display = 'none';
+            formularioSeccion.style.display = 'none';
+            return;
+        }
+        
+        // Renderizar items
+        let html = '';
+        carritoItems.forEach((item, index) => {
+            let detalles = '';
+            if (item.tipo === 'cantidad') {
+                detalles = `${item.cantidad} ${item.unidad} × B/.${item.precio.toFixed(2)}`;
+            } else if (item.tipo === 'area') {
+                detalles = `${item.area} m² × B/.${item.precioM2.toFixed(2)}/m²`;
+            } else {
+                detalles = 'Precio fijo';
+            }
+            
+            html += `
+                <div class="carrito-item" data-index="${index}">
+                    <div class="carrito-item-header">
+                        <strong>${item.nombre}</strong>
+                        <button class="btn-eliminar" data-index="${index}" aria-label="Eliminar ${item.nombre}">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="carrito-item-detalles">${detalles}</div>
+                    <div style="text-align: right; font-weight: 700; color: var(--blue-2); margin-top: 0.5rem; font-size: 1.05rem;">
+                        B/.${item.subtotal.toFixed(2)}
                     </div>
                 </div>
-
-                <!-- Panel del Carrito (Sticky) -->
-                <div>
-                    <div class="carrito-panel carrito-sticky">
-                        <h2>Tu Cotización</h2>
-                        <div id="carrito-contenido">
-                            <div class="carrito-vacio">
-                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9zM4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
-                                </svg>
-                                <p>Agrega servicios para comenzar tu cotización</p>
-                            </div>
-                        </div>
-                        <div id="carrito-totales" style="display: none;"></div>
-                    </div>
-                </div>
+            `;
+        });
+        
+        carritoContenido.innerHTML = html;
+        
+        // Event listeners para eliminar
+        document.querySelectorAll('.btn-eliminar').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                eliminarDelCarrito(index);
+            });
+        });
+        
+        // Calcular y mostrar totales
+        calcularYMostrarTotales();
+        
+        // Mostrar formulario
+        formularioSeccion.style.display = 'block';
+        
+        // Scroll suave al formulario en móvil
+        if (window.innerWidth < 1024) {
+            setTimeout(() => {
+                formularioSeccion.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 300);
+        }
+    }
+    
+    // Eliminar item del carrito
+    function eliminarDelCarrito(index) {
+        carritoItems.splice(index, 1);
+        actualizarCarrito();
+    }
+    
+    // Calcular y mostrar totales con reglas de negocio
+    function calcularYMostrarTotales() {
+        const subtotal = carritoItems.reduce((sum, item) => sum + item.subtotal, 0);
+        
+        // Aplicar mínimo de servicio directamente
+        const totalFinal = aplicarMinimoServicio(subtotal);
+        const minimoAplicado = totalFinal > subtotal;
+        
+        // Renderizar totales
+        let html = '<div class="carrito-totales">';
+        
+        html += `
+            <div class="total-linea">
+                <span>Subtotal:</span>
+                <span style="font-weight: 600;">B/.${subtotal.toFixed(2)}</span>
             </div>
-
-            <!-- Formulario de Cliente - SIMPLIFICADO -->
-            <div class="formulario-cliente" id="formulario-seccion" style="display: none;">
-                <h2>Completa tu Información</h2>
-                <p style="color: var(--gray-600); margin-bottom: var(--space-xl);">
-                    Llena los datos y presiona el botón para enviar tu cotización por WhatsApp
-                </p>
-                <form id="form-cotizacion">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="nombre">Nombre Completo *</label>
-                            <input type="text" id="nombre" name="nombre" required aria-label="Nombre completo">
-                        </div>
-                        <div class="form-group">
-                            <label for="whatsapp">WhatsApp *</label>
-                            <input type="tel" id="whatsapp" name="whatsapp" placeholder="6000-0000" required aria-label="Número de WhatsApp">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="direccion">Dirección del Servicio *</label>
-                        <input type="text" id="direccion" name="direccion" required aria-label="Dirección">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="fecha">Fecha Preferida</label>
-                            <input type="date" id="fecha" name="fecha" aria-label="Fecha preferida">
-                        </div>
-                        <div class="form-group">
-                            <label for="horario">Horario Preferido</label>
-                            <input type="time" id="horario" name="horario" aria-label="Horario preferido">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="notas">Notas Adicionales (opcional)</label>
-                        <textarea id="notas" name="notas" rows="3" placeholder="Detalles adicionales sobre el servicio..." aria-label="Notas adicionales"></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn-enviar-cotizacion" id="btn-enviar">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                        </svg>
-                        Enviar Cotización por WhatsApp
-                    </button>
-                </form>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <img src="/public/images/MicroClean_Compact.jpg" alt="MicroClean" class="footer-logo" width="100" height="100">
-                    <p>Servicios profesionales de limpieza con altos estándares de calidad.</p>
+        `;
+        
+        if (minimoAplicado) {
+            html += `
+                <div class="total-linea" style="color: var(--gray-600); font-size: 0.875rem;">
+                    <span>Mínimo de servicio:</span>
+                    <span style="font-weight: 600;">B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)}</span>
                 </div>
-                <div class="footer-services">
-                    <h4>Servicios</h4>
-                    <a href="cotizador.html">Cotizador</a>
-                    <a href="index.html#servicios">Limpieza de Sofás</a>
-                    <a href="index.html#servicios">Limpieza de Colchones</a>
-                    <a href="index.html#servicios">Limpieza de Cuero</a>
-                </div>
-                <div class="footer-contact">
-                    <h4>Contacto Rápido</h4>
-                    <a href="https://wa.me/50764177111" target="_blank" rel="noopener" class="footer-whatsapp">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                        </svg>
-                        WhatsApp
-                    </a>
-                    <a href="mailto:microcleanpa@gmail.com">microcleanpa@gmail.com</a>
-                </div>
+            `;
+        }
+        
+        html += `
+            <div class="total-linea destacado">
+                <span>Total:</span>
+                <span>B/.${totalFinal.toFixed(2)}</span>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; <span id="year">2024</span> MicroClean. Todos los derechos reservados.</p>
+        `;
+        
+        html += `<p class="minimo-nota">* Mínimo de servicio: B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)}</p>`;
+        
+        html += '</div>';
+        
+        carritoTotales.innerHTML = html;
+        carritoTotales.style.display = 'block';
+    }
+    
+    // Enviar cotización por WhatsApp
+    function enviarCotizacionWhatsApp() {
+        // Obtener datos del formulario
+        const formData = new FormData(formCotizacion);
+        const nombre = formData.get('nombre');
+        const whatsapp = formData.get('whatsapp');
+        const direccion = formData.get('direccion');
+        const fecha = formData.get('fecha');
+        const horario = formData.get('horario');
+        const notas = formData.get('notas');
+        
+        // Construir mensaje
+        let mensaje = `*COTIZACIÓN MICROCLEAN* 🧼✨\n\n`;
+        mensaje += `*Datos del Cliente:*\n`;
+        mensaje += `👤 Nombre: ${nombre}\n`;
+        mensaje += `📱 WhatsApp: ${whatsapp}\n`;
+        mensaje += `📍 Dirección: ${direccion}\n`;
+        
+        if (fecha) mensaje += `📅 Fecha preferida: ${fecha}\n`;
+        if (horario) mensaje += `🕐 Horario preferido: ${horario}\n`;
+        
+        mensaje += `\n*Servicios Solicitados:*\n`;
+        mensaje += `━━━━━━━━━━━━━━━━━━\n`;
+        
+        carritoItems.forEach((item, index) => {
+            mensaje += `\n${index + 1}. *${item.nombre}*\n`;
+            
+            if (item.tipo === 'cantidad') {
+                mensaje += `   📦 Cantidad: ${item.cantidad} ${item.unidad}\n`;
+                mensaje += `   💵 Precio unitario: B/.${item.precio.toFixed(2)}\n`;
+            } else if (item.tipo === 'area') {
+                mensaje += `   📐 Área: ${item.area} m²\n`;
+                mensaje += `   💵 Precio por m²: B/.${item.precioM2.toFixed(2)}\n`;
+            }
+            
+            mensaje += `   💰 Subtotal: B/.${item.subtotal.toFixed(2)}\n`;
+        });
+        
+        // Calcular totales (sin descuentos/promociones)
+        const subtotal = carritoItems.reduce((sum, item) => sum + item.subtotal, 0);
+        const totalFinal = aplicarMinimoServicio(subtotal);
+        
+        mensaje += `\n━━━━━━━━━━━━━━━━━━\n`;
+        mensaje += `Subtotal: B/.${subtotal.toFixed(2)}\n`;
+        mensaje += `\n✅ *TOTAL: B/.${totalFinal.toFixed(2)}*\n`;
+        mensaje += `\n_(Mínimo de servicio: B/.${REGLAS_NEGOCIO.minimoServicio.toFixed(2)})_\n`;
+        
+        if (notas) {
+            mensaje += `\n*📝 Notas adicionales:*\n${notas}\n`;
+        }
+        
+        mensaje += `\n━━━━━━━━━━━━━━━━━━\n`;
+        mensaje += `Gracias por cotizar con MicroClean 🧼✨`;
+        
+        // Abrir WhatsApp
+        const numeroWhatsApp = '50764177111';
+        const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+        window.open(urlWhatsApp, '_blank');
+        
+        // Feedback
+        mostrarMensajeExito();
+    }
+    
+    // Mostrar mensaje de éxito
+    function mostrarMensajeExito() {
+        const mensaje = document.createElement('div');
+        mensaje.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--whatsapp);
+            color: white;
+            padding: 1.25rem 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-xl);
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        `;
+        mensaje.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M5 13l4 4L19 7"/>
+                </svg>
+                <span style="font-weight: 600;">Redirigiendo a WhatsApp...</span>
             </div>
-        </div>
-    </footer>
-
-    <!-- WhatsApp FAB -->
-    <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotización." 
-       target="_blank" 
-       rel="noopener" 
-       class="whatsapp-fab"
-       aria-label="Chatear por WhatsApp">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-        </svg>
-    </a>
-
-    <!-- Scripts -->
-    <script src="app.js"></script>
-    <script src="js/servicios-data.js"></script>
-    <script src="js/reglas-negocio.js"></script>
-    <script src="js/cotizador.js"></script>
-</body>
-</html>
+        `;
+        
+        document.body.appendChild(mensaje);
+        
+        setTimeout(() => {
+            mensaje.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => {
+                if (mensaje.parentNode) {
+                    mensaje.parentNode.removeChild(mensaje);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
+    // Event listeners para sliders (actualización en tiempo real)
+    document.addEventListener('input', function(e) {
+        if (e.target.type === 'range') {
+            const controlType = e.target.dataset.control;
+            const servicioItem = e.target.closest('.servicio-item');
+            const valueDisplay = servicioItem.querySelector(`[data-type="${controlType}"]`);
+            
+            if (controlType === 'cantidad') {
+                const value = parseInt(e.target.value);
+                const unidad = valueDisplay.textContent.split(' ').slice(-1)[0];
+                valueDisplay.textContent = `${value} ${unidad}`;
+            } else if (controlType === 'area') {
+                valueDisplay.textContent = `${e.target.value} m²`;
+            } else if (controlType === 'precio-m2') {
+                valueDisplay.textContent = `B/.${parseFloat(e.target.value).toFixed(2)}`;
+            }
+        }
+    });
+    
+    // CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+    `;
+    document.head.appendChild(style);
+    
+})();
