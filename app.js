@@ -223,48 +223,32 @@
             return percentage;
         }
         
-        // Mouse Events
-        handle.addEventListener('mousedown', function(e) {
+        // Pointer Events (Modern, replaces mouse + touch)
+        function handlePointerDown(e) {
             e.preventDefault();
             isDragging = true;
-        });
-        
-        wrapper.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            isDragging = true;
+            wrapper.setPointerCapture(e.pointerId);
             updateSliderPosition(getPosition(e.clientX));
-        });
-        
-        document.addEventListener('mousemove', function(e) {
+        }
+
+        function handlePointerMove(e) {
             if (!isDragging) return;
             e.preventDefault();
             updateSliderPosition(getPosition(e.clientX));
-        });
-        
-        document.addEventListener('mouseup', function() {
+        }
+
+        function handlePointerUp(e) {
             isDragging = false;
-        });
-        
-        // Touch Events
-        handle.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            isDragging = true;
-        });
-        
-        wrapper.addEventListener('touchstart', function(e) {
-            isDragging = true;
-            updateSliderPosition(getPosition(e.touches[0].clientX));
-        });
-        
-        document.addEventListener('touchmove', function(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-            updateSliderPosition(getPosition(e.touches[0].clientX));
-        }, { passive: false });
-        
-        document.addEventListener('touchend', function() {
-            isDragging = false;
-        });
+            if (wrapper.hasPointerCapture(e.pointerId)) {
+                wrapper.releasePointerCapture(e.pointerId);
+            }
+        }
+
+        // Single set of event listeners per slider
+        wrapper.addEventListener('pointerdown', handlePointerDown);
+        wrapper.addEventListener('pointermove', handlePointerMove);
+        wrapper.addEventListener('pointerup', handlePointerUp);
+        wrapper.addEventListener('pointercancel', handlePointerUp);
     });
     
     // ===== CONTACT FORM =====
