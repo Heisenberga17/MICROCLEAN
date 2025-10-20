@@ -1102,6 +1102,23 @@ footer {
     align-items: start;
 }
 
+/* Mobile: Show Cotización (carrito) first */
+@media (max-width: 1023px) {
+    .cotizador-grid {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .servicios-panel {
+        order: 2; /* Services panel appears second on mobile */
+    }
+
+    .carrito-wrapper {
+        order: 1; /* Tu Cotización appears first on mobile */
+        margin-bottom: var(--space-md); /* Add some spacing */
+    }
+}
+
 @media (min-width: 1024px) {
     .cotizador-grid {
         grid-template-columns: 1.5fr 1fr;
@@ -1413,6 +1430,41 @@ input[type="range"]::-moz-range-thumb:hover {
     position: relative;
 }
 
+/* Mobile: Make Tu Cotización more prominent at the top */
+@media (max-width: 1023px) {
+    .carrito-wrapper {
+        animation: slideDown 0.3s ease-out;
+        /* Make it slightly sticky on mobile for better UX */
+        position: sticky;
+        top: 60px;
+        z-index: 10;
+        background: var(--white);
+        border-radius: var(--radius-md);
+    }
+
+    .carrito-panel {
+        background: linear-gradient(135deg, var(--white) 0%, rgba(9, 101, 198, 0.03) 100%);
+        border: 2px solid var(--blue-2);
+        box-shadow: 0 4px 20px rgba(9, 101, 198, 0.15);
+        /* Collapsible behavior on mobile */
+        transition: all 0.3s ease;
+    }
+
+    /* When user scrolls down, minimize the carrito panel */
+    .carrito-wrapper.scrolled .carrito-panel {
+        padding: var(--space-md);
+    }
+
+    .carrito-wrapper.scrolled .carrito-vacio {
+        display: none;
+    }
+
+    .carrito-wrapper.scrolled .carrito-panel h2 {
+        font-size: 1.25rem;
+        margin-bottom: var(--space-sm);
+    }
+}
+
 @media (min-width: 1024px) {
     .carrito-wrapper {
         position: sticky;
@@ -1428,10 +1480,42 @@ input[type="range"]::-moz-range-thumb:hover {
     border: 2px solid var(--blue-2);
 }
 
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .carrito-panel h2 {
     color: var(--blue-2);
     margin-bottom: var(--space-lg);
     font-size: 1.5rem;
+}
+
+/* Mobile: Add emphasis to Tu Cotización heading */
+@media (max-width: 1023px) {
+    .carrito-panel h2 {
+        font-size: 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .carrito-panel h2::before {
+        content: "📋";
+        font-size: 1.5rem;
+        animation: bounce 2s infinite;
+    }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
 }
 
 .carrito-vacio {
