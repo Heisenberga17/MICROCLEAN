@@ -1434,10 +1434,8 @@ input[type="range"]::-moz-range-thumb:hover {
 @media (max-width: 1023px) {
     .carrito-wrapper {
         animation: slideDown 0.3s ease-out;
-        /* Make it slightly sticky on mobile for better UX */
-        position: sticky;
-        top: 60px;
-        z-index: 10;
+        /* Normal positioning - appears at top but scrolls with content */
+        position: relative;
         background: var(--white);
         border-radius: var(--radius-md);
     }
@@ -1446,22 +1444,7 @@ input[type="range"]::-moz-range-thumb:hover {
         background: linear-gradient(135deg, var(--white) 0%, rgba(9, 101, 198, 0.03) 100%);
         border: 2px solid var(--blue-2);
         box-shadow: 0 4px 20px rgba(9, 101, 198, 0.15);
-        /* Collapsible behavior on mobile */
         transition: all 0.3s ease;
-    }
-
-    /* When user scrolls down, minimize the carrito panel */
-    .carrito-wrapper.scrolled .carrito-panel {
-        padding: var(--space-md);
-    }
-
-    .carrito-wrapper.scrolled .carrito-vacio {
-        display: none;
-    }
-
-    .carrito-wrapper.scrolled .carrito-panel h2 {
-        font-size: 1.25rem;
-        margin-bottom: var(--space-sm);
     }
 }
 
