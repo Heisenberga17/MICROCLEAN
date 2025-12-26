@@ -156,12 +156,11 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.99);
     z-index: 1000;
     transition: all 0.3s ease;
     border-bottom: 1px solid transparent;
+    will-change: transform;
 }
 
 header.scrolled {
@@ -1062,6 +1061,7 @@ footer {
     box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 998;
+    will-change: transform;
 }
 
 .whatsapp-fab:hover {

@@ -43,12 +43,15 @@
     <meta name="ICBM" content="8.9824, -79.5199">
 
     <!-- Preconnect for Performance -->
-    <link rel="preconnect" href="https://wa.me">
     <link rel="dns-prefetch" href="https://wa.me">
+    <link rel="preconnect" href="https://wa.me">
+
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/public/images/MicroClean_Main.jpg" as="image" fetchpriority="high">
+    <link rel="preload" href="style.css" as="style">
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
-    <link rel="preload" href="style.css" as="style">
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -146,7 +149,7 @@
         <div class="container">
             <div class="header-content">
                 <a href="#top" class="logo-link" aria-label="MicroClean - Inicio">
-                    <img src="/public/images/MicroClean_Main.jpg" alt="MicroClean Logo" class="logo" width="150" height="50">
+                    <img src="/public/images/MicroClean_Main.jpg" alt="MicroClean Logo" class="logo" width="150" height="50" fetchpriority="high">
                     <span class="logo-text">MicroClean</span>
                 </a>
                 <nav class="nav-menu" aria-label="Navegación principal">
@@ -219,7 +222,7 @@
                 <!-- Service 1: Tapicería en Tela -->
                 <article class="service-card">
                     <div class="service-image">
-                        <img src="/public/images/services/Sofa.jpg" alt="Limpieza de Tapicería en Tela" loading="lazy" width="400" height="250">
+                        <img src="/public/images/services/Sofa.jpg" alt="Limpieza de Tapicería en Tela" loading="eager" width="400" height="250">
                     </div>
                     <div class="service-content">
                         <h3>Limpieza de Tapicería en Tela</h3>
@@ -243,7 +246,7 @@
                 <!-- Service 2: Cuero -->
                 <article class="service-card">
                     <div class="service-image">
-                        <img src="/public/images/services/Sofa.jpg" alt="Limpieza de Cuero" loading="lazy" width="400" height="250">
+                        <img src="/public/images/services/Sofa.jpg" alt="Limpieza de Cuero" loading="eager" width="400" height="250">
                     </div>
                     <div class="service-content">
                         <h3>Limpieza y Tratamiento de Cuero</h3>
@@ -267,7 +270,7 @@
                 <!-- Service 3: Impermeabilización -->
                 <article class="service-card">
                     <div class="service-image">
-                        <img src="/public/images/services/Cama.jpg" alt="Impermeabilización" loading="lazy" width="400" height="250">
+                        <img src="/public/images/services/Cama.jpg" alt="Impermeabilización" loading="eager" width="400" height="250">
                     </div>
                     <div class="service-content">
                         <h3>Impermeabilización de Telas</h3>
@@ -378,11 +381,11 @@
                     <div class="slider-wrapper">
                         <div class="image-pair">
                             <div class="before-image">
-                                <img src="/public/images/gallery/antes_cama1.jpg" alt="Colchón antes de la limpieza" loading="eager" width="800" height="600">
+                                <img src="/public/images/gallery/antes_cama1.jpg" alt="Colchón antes de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Antes</span>
                             </div>
                             <div class="after-image">
-                                <img src="/public/images/gallery/despues_cama1.jpg" alt="Colchón después de la limpieza" loading="eager" width="800" height="600">
+                                <img src="/public/images/gallery/despues_cama1.jpg" alt="Colchón después de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Después</span>
                             </div>
                             <div class="slider-handle" role="slider" aria-label="Comparar antes y después" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
@@ -403,11 +406,11 @@
                     <div class="slider-wrapper">
                         <div class="image-pair">
                             <div class="before-image">
-                                <img src="/public/images/gallery/antes_silla2.jpg" alt="Silla antes de la limpieza" loading="eager" width="800" height="600">
+                                <img src="/public/images/gallery/antes_silla2.jpg" alt="Silla antes de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Antes</span>
                             </div>
                             <div class="after-image">
-                                <img src="/public/images/gallery/despues_silla2.jpg" alt="Silla después de la limpieza" loading="eager" width="800" height="600">
+                                <img src="/public/images/gallery/despues_silla2.jpg" alt="Silla después de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Después</span>
                             </div>
                             <div class="slider-handle" role="slider" aria-label="Comparar antes y después" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
@@ -428,11 +431,11 @@
                     <div class="slider-wrapper">
                         <div class="image-pair">
                             <div class="before-image">
-                                <img src="/public/images/gallery/antes_cama2.jpg" alt="Colchón antes de la limpieza" loading="eager" width="800" height="600">
+                                <img src="/public/images/gallery/antes_cama2.jpg" alt="Colchón antes de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Antes</span>
                             </div>
                             <div class="after-image">
-                                <img src="/public/images/gallery/despues_cama2.jpg" alt="Colchón después de la limpieza" loading="eager" width="800" height="600">
+                                <img src="/public/images/gallery/despues_cama2.jpg" alt="Colchón después de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Después</span>
                             </div>
                             <div class="slider-handle" role="slider" aria-label="Comparar antes y después" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
@@ -453,11 +456,11 @@
                     <div class="slider-wrapper">
                         <div class="image-pair">
                             <div class="before-image">
-                                <img src="/public/images/gallery/antes_sofa1.jpg" alt="Sofá antes de la limpieza" loading="eager" width="800" height="600">
+                                <img src="/public/images/gallery/antes_sofa1.jpg" alt="Sofá antes de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Antes</span>
                             </div>
                             <div class="after-image">
-                                <img src="/public/images/gallery/despues_sofa1.jpg" alt="Sofá después de la limpieza" loading="eager" width="800" height="600">
+                                <img src="/public/images/gallery/despues_sofa1.jpg" alt="Sofá después de la limpieza" loading="lazy" width="800" height="600">
                                 <span class="label">Después</span>
                             </div>
                             <div class="slider-handle" role="slider" aria-label="Comparar antes y después" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
@@ -561,6 +564,6 @@
         </svg>
     </a>
 
-    <script src="js/main.js"></script>
+    <script src="js/main.js" defer></script>
 </body>
 </html>
