@@ -1708,24 +1708,8 @@ body {
     position: relative;
     display: inline-block;
     transition: all 0.3s ease;
-}
-
-.price::before {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--blue-1), var(--blue-accent));
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.service-card:hover .price::before {
-    transform: scaleX(1);
-    transform-origin: left;
+    border-bottom: 3px solid var(--blue-1);
+    padding-bottom: 2px;
 }
 
 /* ==================== GALLERY/SLIDER ENHANCEMENTS ==================== */
