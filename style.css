@@ -1760,7 +1760,7 @@ body {
 }
 
 .slider-handle {
-    transition: all 0.2s ease;
+    transition: none;
 }
 
 .handle-button {
@@ -2137,7 +2137,7 @@ button {
         /* Use overflow instead */
         overflow: hidden;
         width: 0%;
-        transition: width 0.05s ease-out;
+        transition: none;
     }
 
     /* This would need JS support to update width instead of clip-path */

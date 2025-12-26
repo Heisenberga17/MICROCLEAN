@@ -196,27 +196,43 @@
 
         let position = 0; // Start at 0% (showing only BEFORE)
         let isDragging = false;
+        let rafId = null;
+        let pendingPosition = null;
 
         // Initial setup
         applyPosition();
 
         function updateSliderPosition(pos) {
             const clampedPos = Math.max(0, Math.min(100, pos));
-            position = clampedPos;
-            applyPosition();
+            pendingPosition = clampedPos;
+
+            // Schedule immediate update using RAF for smooth 60fps rendering
+            if (!rafId) {
+                rafId = requestAnimationFrame(() => {
+                    if (pendingPosition !== null) {
+                        position = pendingPosition;
+                        pendingPosition = null;
+                        applyPosition();
+                    }
+                    rafId = null;
+                });
+            }
         }
 
         function applyPosition() {
-            // Use CSS custom properties for GPU-accelerated transforms
-            handle.style.setProperty('--slider-position', position + '%');
-            handle.style.left = position + '%';
+            // Direct DOM updates for instant response
+            const posStr = position + '%';
 
-            // Smooth clip-path transition for after image
+            // Update handle position
+            handle.style.left = posStr;
+            handle.style.setProperty('--slider-position', posStr);
+
+            // Update clip-path for immediate image reveal
             afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
 
-            // Smooth label fade transitions with easing
-            const fadeThreshold = 15; // Start fading earlier for smoother transition
-            const fadeRange = 20; // Range over which fade occurs
+            // Update label opacity
+            const fadeThreshold = 15;
+            const fadeRange = 20;
 
             if (beforeLabel) {
                 const beforeOpacity = position < fadeThreshold ? 1 :
