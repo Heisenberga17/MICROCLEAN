@@ -230,13 +230,18 @@
             // Update clip-path for immediate image reveal
             afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
 
-            // Keep labels always visible
-            if (beforeLabel) {
-                beforeLabel.style.opacity = 1;
-            }
-
-            if (afterLabel) {
-                afterLabel.style.opacity = 1;
+            // Dynamic label visibility based on which side is more visible
+            // Show "Antes" when slider is < 50%, "Después" when >= 50%
+            if (beforeLabel && afterLabel) {
+                if (position < 50) {
+                    // Before image is more visible
+                    beforeLabel.style.opacity = 1;
+                    afterLabel.style.opacity = 0;
+                } else {
+                    // After image is more visible
+                    beforeLabel.style.opacity = 0;
+                    afterLabel.style.opacity = 1;
+                }
             }
         }
 
