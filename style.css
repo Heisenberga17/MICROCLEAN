@@ -11,9 +11,9 @@
 
 :root {
     /* Colors */
-    --blue-1: #023E8A;
-    --blue-2: #023E8A;
-    --blue-accent: #023E8A;
+    --blue-1: #023E8A;        /* Primary brand color - 80% usage */
+    --blue-2: #0965C6;        /* Secondary accent - lighter blue */
+    --blue-accent: #0077B6;   /* Tertiary accent - medium blue */
     --whatsapp: #25D366;
     --whatsapp-hover: #1DA851;
     
