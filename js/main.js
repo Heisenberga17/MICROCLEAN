@@ -63,20 +63,12 @@
         function createMobileNav() {
             const nav = document.createElement('nav');
             nav.className = 'mobile-nav';
-            
-            // FIXED: Detect current page and adjust links accordingly
-            const currentPage = window.location.pathname;
-            const isOnCotizador = currentPage.includes('cotizador.html');
-            
-            // If on cotizador, all section links should go back to index.html
-            const baseUrl = isOnCotizador ? 'index.html' : '';
-            
+
             nav.innerHTML = `
-                <a href="cotizador.html" class="mobile-nav-link">Cotizador</a>
-                <a href="${baseUrl}#quienes-somos" class="mobile-nav-link">Quiénes Somos</a>
-                <a href="${baseUrl}#servicios" class="mobile-nav-link">Servicios</a>
-                <a href="${baseUrl}#galeria" class="mobile-nav-link">Galería</a>
-                <a href="${baseUrl}#contacto" class="mobile-nav-link">Contacto</a>
+                <a href="#quienes-somos" class="mobile-nav-link">Quiénes Somos</a>
+                <a href="#servicios" class="mobile-nav-link">Servicios</a>
+                <a href="#galeria" class="mobile-nav-link">Galería</a>
+                <a href="#contacto" class="mobile-nav-link">Contacto</a>
                 <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotización." 
                    target="_blank" 
                    rel="noopener" 
