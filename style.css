@@ -814,11 +814,12 @@ header.scrolled {
 
 .before-image .label {
     left: var(--space-lg);
+    opacity: 1 !important;
 }
 
 .after-image .label {
     right: var(--space-lg);
-    opacity: 0;
+    opacity: 1 !important;
 }
 
 .slider-handle {

@@ -230,22 +230,13 @@
             // Update clip-path for immediate image reveal
             afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
 
-            // Update label opacity
-            const fadeThreshold = 15;
-            const fadeRange = 20;
-
+            // Keep labels always visible
             if (beforeLabel) {
-                const beforeOpacity = position < fadeThreshold ? 1 :
-                                    position < fadeThreshold + fadeRange ?
-                                    1 - ((position - fadeThreshold) / fadeRange) : 0;
-                beforeLabel.style.opacity = beforeOpacity;
+                beforeLabel.style.opacity = 1;
             }
 
             if (afterLabel) {
-                const afterOpacity = position < fadeThreshold ? 0 :
-                                   position < fadeThreshold + fadeRange ?
-                                   (position - fadeThreshold) / fadeRange : 1;
-                afterLabel.style.opacity = afterOpacity;
+                afterLabel.style.opacity = 1;
             }
         }
 
