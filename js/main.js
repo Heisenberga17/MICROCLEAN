@@ -197,51 +197,101 @@
         let position = 0; // Start at 0% (showing only BEFORE)
         let isDragging = false;
 
+        // Animation frame tracking for smooth 60fps updates
+        let rafId = null;
+        let targetPosition = position;
+
         // Initial setup
-        updateSliderPosition(position);
+        updateSliderPosition(position, true);
 
-        function updateSliderPosition(pos) {
+        function updateSliderPosition(pos, immediate = false) {
             const clampedPos = Math.max(0, Math.min(100, pos));
-            position = clampedPos;
+            targetPosition = clampedPos;
 
-            // Move handle
-            handle.style.left = position + '%';
-
-            // Clip the AFTER image to reveal it as we slide right
-            // At 0%: after image is completely hidden (clip-path: inset(0 100% 0 0))
-            // At 100%: after image is fully visible (clip-path: inset(0 0 0 0))
-            afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
-
-            // Control label visibility
-            // Hide "Antes" label when slider is more than 20% to the right
-            // Show "Después" label when slider is more than 20% to the right
-            if (beforeLabel) {
-                beforeLabel.style.opacity = position > 20 ? '0' : '1';
-            }
-            if (afterLabel) {
-                afterLabel.style.opacity = position > 20 ? '1' : '0';
+            if (immediate) {
+                position = clampedPos;
+                applyPosition();
+            } else if (!rafId) {
+                rafId = requestAnimationFrame(animateToTarget);
             }
         }
-        
+
+        function animateToTarget() {
+            // Smooth interpolation (lerp) for buttery smooth transitions
+            const diff = targetPosition - position;
+            const speed = 0.2; // Adjust for smoothness (0.1 = very smooth, 0.3 = responsive)
+
+            if (Math.abs(diff) < 0.1) {
+                position = targetPosition;
+                applyPosition();
+                rafId = null;
+            } else {
+                position += diff * speed;
+                applyPosition();
+                rafId = requestAnimationFrame(animateToTarget);
+            }
+        }
+
+        function applyPosition() {
+            // Use CSS custom properties for GPU-accelerated transforms
+            handle.style.setProperty('--slider-position', position + '%');
+            handle.style.left = position + '%';
+
+            // Smooth clip-path transition for after image
+            afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
+
+            // Smooth label fade transitions with easing
+            const fadeThreshold = 15; // Start fading earlier for smoother transition
+            const fadeRange = 20; // Range over which fade occurs
+
+            if (beforeLabel) {
+                const beforeOpacity = position < fadeThreshold ? 1 :
+                                    position < fadeThreshold + fadeRange ?
+                                    1 - ((position - fadeThreshold) / fadeRange) : 0;
+                beforeLabel.style.opacity = beforeOpacity;
+            }
+
+            if (afterLabel) {
+                const afterOpacity = position < fadeThreshold ? 0 :
+                                   position < fadeThreshold + fadeRange ?
+                                   (position - fadeThreshold) / fadeRange : 1;
+                afterLabel.style.opacity = afterOpacity;
+            }
+        }
+
         function getPosition(clientX) {
             const rect = wrapper.getBoundingClientRect();
             const x = clientX - rect.left;
             const percentage = (x / rect.width) * 100;
             return percentage;
         }
-        
-        // Pointer Events (Modern, replaces mouse + touch)
+
+        // Throttled pointer move for 60fps performance
+        let moveThrottled = false;
+
         function handlePointerDown(e) {
             e.preventDefault();
             isDragging = true;
             wrapper.setPointerCapture(e.pointerId);
-            updateSliderPosition(getPosition(e.clientX));
+            // Immediate update on mousedown for responsiveness
+            const pos = getPosition(e.clientX);
+            position = pos;
+            targetPosition = pos;
+            updateSliderPosition(pos, true);
         }
 
         function handlePointerMove(e) {
             if (!isDragging) return;
             e.preventDefault();
-            updateSliderPosition(getPosition(e.clientX));
+
+            // Throttle updates to 60fps using RAF
+            if (!moveThrottled) {
+                moveThrottled = true;
+                requestAnimationFrame(() => {
+                    updateSliderPosition(getPosition(e.clientX));
+                    moveThrottled = false;
+                });
+            }
         }
 
         function handlePointerUp(e) {
@@ -251,11 +301,22 @@
             }
         }
 
-        // Single set of event listeners per slider
+        // Event listeners with passive for better scroll performance
         wrapper.addEventListener('pointerdown', handlePointerDown);
-        wrapper.addEventListener('pointermove', handlePointerMove);
+        wrapper.addEventListener('pointermove', handlePointerMove, { passive: false });
         wrapper.addEventListener('pointerup', handlePointerUp);
         wrapper.addEventListener('pointercancel', handlePointerUp);
+
+        // Add keyboard support for accessibility (arrow keys)
+        handle.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                updateSliderPosition(Math.max(0, position - 5));
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                updateSliderPosition(Math.min(100, position + 5));
+            }
+        });
     });
     
     // ===== CONTACT FORM =====

@@ -787,11 +787,11 @@ header.scrolled {
     transition: none;
 }
 
-/* AFTER image starts completely hidden */
+/* AFTER image starts completely hidden - smooth reveal */
 .after-image {
     clip-path: inset(0 100% 0 0);
     z-index: 2;
-    transition: clip-path 0.05s ease-out;
+    /* Remove transition - handled by JavaScript RAF for 60fps */
     will-change: clip-path;
 }
 
@@ -799,7 +799,7 @@ header.scrolled {
     position: absolute;
     top: var(--space-lg);
     padding: var(--space-sm) var(--space-lg);
-    background: rgba(9, 101, 198, 0.95);
+    background: rgba(2, 62, 138, 0.95);
     color: var(--white);
     font-size: 0.875rem;
     font-weight: 700;
@@ -808,17 +808,17 @@ header.scrolled {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    /* Smooth fade handled by JavaScript */
+    transition: none;
 }
 
 .before-image .label {
     left: var(--space-lg);
-    transition: opacity 0.2s ease;
 }
 
 .after-image .label {
     right: var(--space-lg);
     opacity: 0;
-    transition: opacity 0.2s ease;
 }
 
 .slider-handle {
@@ -826,46 +826,90 @@ header.scrolled {
     top: 0;
     bottom: 0;
     left: 0%;
-    width: 60px;
-    margin-left: -30px;
+    width: 64px;
+    margin-left: -32px;
     cursor: ew-resize;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
     touch-action: none;
+    will-change: transform;
+    /* Smooth position handled by JavaScript RAF */
+    transition: none;
 }
 
 .handle-line {
     position: absolute;
     width: 4px;
     height: 100%;
-    background: var(--white);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+    background: linear-gradient(to bottom,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 1) 10%,
+        rgba(255, 255, 255, 1) 90%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .handle-button {
-    width: 56px;
-    height: 56px;
-    background: var(--white);
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--white) 0%, var(--gray-50) 100%);
+    border: 3px solid var(--white);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.4),
+        0 0 0 4px rgba(2, 62, 138, 0.1);
     z-index: 1;
-    transition: transform 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
-.slider-handle:hover .handle-button,
+.slider-handle:hover .handle-button {
+    transform: scale(1.2);
+    box-shadow:
+        0 6px 32px rgba(0, 0, 0, 0.5),
+        0 0 0 6px rgba(2, 62, 138, 0.2);
+    border-color: var(--blue-1);
+}
+
 .slider-handle:active .handle-button {
-    transform: scale(1.15);
+    transform: scale(1.1);
+}
+
+.slider-handle:focus {
+    outline: none;
+}
+
+.slider-handle:focus-visible .handle-button {
+    box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.4),
+        0 0 0 4px var(--blue-1);
 }
 
 .handle-button svg {
-    color: var(--blue-2);
-    width: 32px;
-    height: 32px;
+    color: var(--blue-1);
+    width: 36px;
+    height: 36px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    transition: transform 0.2s ease;
+}
+
+.slider-handle:hover .handle-button svg {
+    transform: scale(1.1);
+}
+
+/* Add smooth cursor feedback */
+.slider-wrapper {
+    cursor: grab;
+}
+
+.slider-wrapper:active {
+    cursor: grabbing;
 }
 
 /* ==================== CONTACT ==================== */
