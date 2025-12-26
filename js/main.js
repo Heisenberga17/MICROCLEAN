@@ -197,39 +197,13 @@
         let position = 0; // Start at 0% (showing only BEFORE)
         let isDragging = false;
 
-        // Animation frame tracking for smooth 60fps updates
-        let rafId = null;
-        let targetPosition = position;
-
         // Initial setup
-        updateSliderPosition(position, true);
+        applyPosition();
 
-        function updateSliderPosition(pos, immediate = false) {
+        function updateSliderPosition(pos) {
             const clampedPos = Math.max(0, Math.min(100, pos));
-            targetPosition = clampedPos;
-
-            if (immediate) {
-                position = clampedPos;
-                applyPosition();
-            } else if (!rafId) {
-                rafId = requestAnimationFrame(animateToTarget);
-            }
-        }
-
-        function animateToTarget() {
-            // Smooth interpolation (lerp) for buttery smooth transitions
-            const diff = targetPosition - position;
-            const speed = 0.2; // Adjust for smoothness (0.1 = very smooth, 0.3 = responsive)
-
-            if (Math.abs(diff) < 0.1) {
-                position = targetPosition;
-                applyPosition();
-                rafId = null;
-            } else {
-                position += diff * speed;
-                applyPosition();
-                rafId = requestAnimationFrame(animateToTarget);
-            }
+            position = clampedPos;
+            applyPosition();
         }
 
         function applyPosition() {
@@ -266,32 +240,17 @@
             return percentage;
         }
 
-        // Throttled pointer move for 60fps performance
-        let moveThrottled = false;
-
         function handlePointerDown(e) {
             e.preventDefault();
             isDragging = true;
             wrapper.setPointerCapture(e.pointerId);
-            // Immediate update on mousedown for responsiveness
-            const pos = getPosition(e.clientX);
-            position = pos;
-            targetPosition = pos;
-            updateSliderPosition(pos, true);
+            updateSliderPosition(getPosition(e.clientX));
         }
 
         function handlePointerMove(e) {
             if (!isDragging) return;
             e.preventDefault();
-
-            // Throttle updates to 60fps using RAF
-            if (!moveThrottled) {
-                moveThrottled = true;
-                requestAnimationFrame(() => {
-                    updateSliderPosition(getPosition(e.clientX));
-                    moveThrottled = false;
-                });
-            }
+            updateSliderPosition(getPosition(e.clientX));
         }
 
         function handlePointerUp(e) {
