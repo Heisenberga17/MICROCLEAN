@@ -230,22 +230,18 @@
             // Update clip-path for immediate image reveal
             afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
 
-            // Update label opacity
-            const fadeThreshold = 15;
-            const fadeRange = 20;
-
-            if (beforeLabel) {
-                const beforeOpacity = position < fadeThreshold ? 1 :
-                                    position < fadeThreshold + fadeRange ?
-                                    1 - ((position - fadeThreshold) / fadeRange) : 0;
-                beforeLabel.style.opacity = beforeOpacity;
-            }
-
-            if (afterLabel) {
-                const afterOpacity = position < fadeThreshold ? 0 :
-                                   position < fadeThreshold + fadeRange ?
-                                   (position - fadeThreshold) / fadeRange : 1;
-                afterLabel.style.opacity = afterOpacity;
+            // Dynamic label visibility based on which side is more visible
+            // Show "Antes" when slider is < 50%, "Después" when >= 50%
+            if (beforeLabel && afterLabel) {
+                if (position < 50) {
+                    // Before image is more visible
+                    beforeLabel.style.opacity = 1;
+                    afterLabel.style.opacity = 0;
+                } else {
+                    // After image is more visible
+                    beforeLabel.style.opacity = 0;
+                    afterLabel.style.opacity = 1;
+                }
             }
         }
 
