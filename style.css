@@ -642,7 +642,7 @@ header.scrolled {
     color: var(--blue-2);
     padding: var(--space-sm) var(--space-lg);
     border: 2px solid var(--blue-2);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-full);
     background: transparent;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -659,7 +659,7 @@ header.scrolled {
     background: var(--blue-2);
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: -1;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-full);
 }
 
 .service-link:hover {
