@@ -53,6 +53,20 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
 
+    <!-- Prevent FOUC (Flash of Unstyled Content) -->
+    <style>
+        html {
+            background-color: #ffffff;
+        }
+        body {
+            opacity: 0;
+            transition: opacity 0.1s ease-in;
+        }
+        body.loaded {
+            opacity: 1;
+        }
+    </style>
+
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
@@ -141,6 +155,18 @@
         "https://wa.me/50764177111"
       ]
     }
+    </script>
+
+    <!-- Immediate Load Script -->
+    <script>
+        // Add loaded class immediately when DOM is interactive
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.classList.add('loaded');
+            });
+        } else {
+            document.body.classList.add('loaded');
+        }
     </script>
 </head>
 <body>
