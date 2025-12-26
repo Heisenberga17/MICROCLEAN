@@ -63,20 +63,12 @@
         function createMobileNav() {
             const nav = document.createElement('nav');
             nav.className = 'mobile-nav';
-            
-            // FIXED: Detect current page and adjust links accordingly
-            const currentPage = window.location.pathname;
-            const isOnCotizador = currentPage.includes('cotizador.html');
-            
-            // If on cotizador, all section links should go back to index.html
-            const baseUrl = isOnCotizador ? 'index.html' : '';
-            
+
             nav.innerHTML = `
-                <a href="cotizador.html" class="mobile-nav-link">Cotizador</a>
-                <a href="${baseUrl}#quienes-somos" class="mobile-nav-link">Quiénes Somos</a>
-                <a href="${baseUrl}#servicios" class="mobile-nav-link">Servicios</a>
-                <a href="${baseUrl}#galeria" class="mobile-nav-link">Galería</a>
-                <a href="${baseUrl}#contacto" class="mobile-nav-link">Contacto</a>
+                <a href="#quienes-somos" class="mobile-nav-link">Quiénes Somos</a>
+                <a href="#servicios" class="mobile-nav-link">Servicios</a>
+                <a href="#galeria" class="mobile-nav-link">Galería</a>
+                <a href="#contacto" class="mobile-nav-link">Contacto</a>
                 <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotización." 
                    target="_blank" 
                    rel="noopener" 
@@ -204,41 +196,66 @@
 
         let position = 0; // Start at 0% (showing only BEFORE)
         let isDragging = false;
+        let rafId = null;
+        let pendingPosition = null;
 
         // Initial setup
-        updateSliderPosition(position);
+        applyPosition();
 
         function updateSliderPosition(pos) {
             const clampedPos = Math.max(0, Math.min(100, pos));
-            position = clampedPos;
+            pendingPosition = clampedPos;
 
-            // Move handle
-            handle.style.left = position + '%';
-
-            // Clip the AFTER image to reveal it as we slide right
-            // At 0%: after image is completely hidden (clip-path: inset(0 100% 0 0))
-            // At 100%: after image is fully visible (clip-path: inset(0 0 0 0))
-            afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
-
-            // Control label visibility
-            // Hide "Antes" label when slider is more than 20% to the right
-            // Show "Después" label when slider is more than 20% to the right
-            if (beforeLabel) {
-                beforeLabel.style.opacity = position > 20 ? '0' : '1';
-            }
-            if (afterLabel) {
-                afterLabel.style.opacity = position > 20 ? '1' : '0';
+            // Schedule immediate update using RAF for smooth 60fps rendering
+            if (!rafId) {
+                rafId = requestAnimationFrame(() => {
+                    if (pendingPosition !== null) {
+                        position = pendingPosition;
+                        pendingPosition = null;
+                        applyPosition();
+                    }
+                    rafId = null;
+                });
             }
         }
-        
+
+        function applyPosition() {
+            // Direct DOM updates for instant response
+            const posStr = position + '%';
+
+            // Update handle position
+            handle.style.left = posStr;
+            handle.style.setProperty('--slider-position', posStr);
+
+            // Update clip-path for immediate image reveal
+            afterImage.style.clipPath = `inset(0 ${100 - position}% 0 0)`;
+
+            // Update label opacity
+            const fadeThreshold = 15;
+            const fadeRange = 20;
+
+            if (beforeLabel) {
+                const beforeOpacity = position < fadeThreshold ? 1 :
+                                    position < fadeThreshold + fadeRange ?
+                                    1 - ((position - fadeThreshold) / fadeRange) : 0;
+                beforeLabel.style.opacity = beforeOpacity;
+            }
+
+            if (afterLabel) {
+                const afterOpacity = position < fadeThreshold ? 0 :
+                                   position < fadeThreshold + fadeRange ?
+                                   (position - fadeThreshold) / fadeRange : 1;
+                afterLabel.style.opacity = afterOpacity;
+            }
+        }
+
         function getPosition(clientX) {
             const rect = wrapper.getBoundingClientRect();
             const x = clientX - rect.left;
             const percentage = (x / rect.width) * 100;
             return percentage;
         }
-        
-        // Pointer Events (Modern, replaces mouse + touch)
+
         function handlePointerDown(e) {
             e.preventDefault();
             isDragging = true;
@@ -259,11 +276,22 @@
             }
         }
 
-        // Single set of event listeners per slider
+        // Event listeners with passive for better scroll performance
         wrapper.addEventListener('pointerdown', handlePointerDown);
-        wrapper.addEventListener('pointermove', handlePointerMove);
+        wrapper.addEventListener('pointermove', handlePointerMove, { passive: false });
         wrapper.addEventListener('pointerup', handlePointerUp);
         wrapper.addEventListener('pointercancel', handlePointerUp);
+
+        // Add keyboard support for accessibility (arrow keys)
+        handle.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                updateSliderPosition(Math.max(0, position - 5));
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                updateSliderPosition(Math.min(100, position + 5));
+            }
+        });
     });
     
     // ===== CONTACT FORM =====

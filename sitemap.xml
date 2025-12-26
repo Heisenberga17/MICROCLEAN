@@ -12,14 +12,6 @@
     <priority>1.0</priority>
   </url>
 
-  <!-- Cotizador Page -->
-  <url>
-    <loc>https://microcleanpa.com/cotizador.html</loc>
-    <lastmod>2025-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
   <!-- Services Section -->
   <url>
     <loc>https://microcleanpa.com/#servicios</loc>
