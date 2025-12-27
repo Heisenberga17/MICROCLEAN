@@ -68,6 +68,7 @@
                 <a href="#quienes-somos" class="mobile-nav-link">Quiénes Somos</a>
                 <a href="#servicios" class="mobile-nav-link">Servicios</a>
                 <a href="#galeria" class="mobile-nav-link">Galería</a>
+                <a href="#resenas" class="mobile-nav-link">Reseñas</a>
                 <a href="#contacto" class="mobile-nav-link">Contacto</a>
                 <a href="https://wa.me/50764177111?text=Hola%20MicroClean%2C%20quiero%20una%20cotización." 
                    target="_blank" 

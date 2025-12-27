@@ -1177,6 +1177,73 @@ footer {
     gap: var(--space-sm);
 }
 
+/* ==================== REVIEWS SECTION ==================== */
+.reviews {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    padding: var(--space-3xl) 0;
+    position: relative;
+}
+
+.reviews-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.reviews-embed {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reviews-embed:hover {
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-4px);
+}
+
+.reviews-embed iframe {
+    display: block;
+    width: 100%;
+    border: none;
+}
+
+.reviews-footer {
+    padding: var(--space-lg);
+    text-align: center;
+    background: linear-gradient(to bottom, var(--gray-50), var(--white));
+    border-top: 1px solid var(--gray-200);
+}
+
+.btn-more-reviews {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-xl);
+    background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+    color: var(--white);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(9, 101, 198, 0.3);
+}
+
+.btn-more-reviews:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(9, 101, 198, 0.4);
+}
+
+.btn-more-reviews svg {
+    transition: transform 0.3s ease;
+}
+
+.btn-more-reviews:hover svg {
+    transform: translateX(4px);
+}
+
+/* ==================== FOOTER ==================== */
 .footer-services h4,
 .footer-contact h4 {
     color: var(--white);
@@ -1281,8 +1348,23 @@ footer {
     .services,
     .gallery,
     .contact,
-    .about {
+    .about,
+    .reviews {
         padding: 2.5rem 0;
+    }
+
+    .reviews-embed iframe {
+        height: 400px;
+    }
+
+    .reviews-footer {
+        padding: var(--space-md);
+    }
+
+    .btn-more-reviews {
+        width: 100%;
+        justify-content: center;
+        padding: var(--space-md) var(--space-lg);
     }
     
     .section-header {
