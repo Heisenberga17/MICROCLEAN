@@ -185,7 +185,7 @@ header.scrolled {
 }
 
 .logo-link:hover {
-    transform: translateY(-2px);
+    transform: none;
 }
 
 .logo {
@@ -193,7 +193,9 @@ header.scrolled {
     width: auto;
     max-width: 280px;
     object-fit: contain;
-    background: transparent;
+    background: #FFFFFF !important;
+    filter: none !important;
+    box-shadow: none !important;
 }
 
 /* ==================== NAVIGATION ==================== */
@@ -1789,16 +1791,11 @@ body {
 }
 
 .logo-link:hover {
-    transform: scale(1.05) translateY(-2px);
-}
-
-.logo {
-    filter: drop-shadow(0 2px 4px rgba(9, 101, 198, 0.1));
-    transition: filter 0.3s ease;
+    transform: none;
 }
 
 .logo-link:hover .logo {
-    filter: drop-shadow(0 4px 8px rgba(9, 101, 198, 0.2));
+    filter: none;
 }
 
 .nav-link {
