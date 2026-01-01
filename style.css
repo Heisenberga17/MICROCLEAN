@@ -156,7 +156,7 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(255, 255, 255, 0.99);
+    background: #FFFFFF;
     z-index: 1000;
     transition: all 0.3s ease;
     border-bottom: 1px solid transparent;
@@ -189,10 +189,11 @@ header.scrolled {
 }
 
 .logo {
-    height: 50px;
+    height: 65px;
     width: auto;
-    max-width: 250px;
+    max-width: 280px;
     object-fit: contain;
+    background: transparent;
 }
 
 /* ==================== NAVIGATION ==================== */
@@ -1408,9 +1409,9 @@ footer {
         padding: 0.75rem 0;
         min-height: 64px;
     }
-    
+
     .logo {
-        height: 45px;
+        height: 55px;
     }
     
     .logo-text {
