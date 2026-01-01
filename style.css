@@ -732,7 +732,7 @@ header.scrolled {
     position: relative;
     width: 100%;
     min-height: 300px;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
     background: var(--gray-100);
     display: flex;
@@ -740,7 +740,7 @@ header.scrolled {
     justify-content: center;
 }
 
-/* Portrait mobile - taller aspect ratio */
+/* Portrait mobile */
 @media (max-width: 767px) and (orientation: portrait) {
     .image-pair {
         aspect-ratio: 4 / 3;
@@ -748,18 +748,18 @@ header.scrolled {
     }
 }
 
-/* Landscape mobile - wider aspect ratio */
+/* Landscape mobile */
 @media (max-width: 767px) and (orientation: landscape) {
     .image-pair {
-        aspect-ratio: 21 / 9;
-        min-height: 200px;
+        aspect-ratio: 4 / 3;
+        min-height: 280px;
     }
 }
 
 /* Tablet */
 @media (min-width: 768px) and (max-width: 1023px) {
     .image-pair {
-        aspect-ratio: 16 / 9;
+        aspect-ratio: 4 / 3;
         min-height: 350px;
     }
 }
@@ -767,7 +767,7 @@ header.scrolled {
 /* Desktop */
 @media (min-width: 1024px) {
     .image-pair {
-        aspect-ratio: 21 / 9;
+        aspect-ratio: 4 / 3;
         min-height: 400px;
     }
 }
