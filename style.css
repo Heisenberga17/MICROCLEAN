@@ -3723,7 +3723,7 @@ body {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
     transition: all 0.3s ease;
-    height: 100%;
+    min-height: 150px;
     display: flex;
     flex-direction: column;
     justify-content: center;
