@@ -2804,14 +2804,57 @@ body {
     box-shadow: var(--shadow-soft);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(2, 62, 138, 0.08);
 }
 
 .service-card-simple:hover {
     transform: translateY(-8px) scale(1.02);
     box-shadow: var(--shadow-elevated);
+    border-color: rgba(9, 101, 198, 0.2);
+}
+
+/* Card inner wrapper for glow effect */
+.service-card-simple .card-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+/* Mouse tracking glow blob */
+.card-glow-blob {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(9, 101, 198, 0.35) 0%, rgba(2, 62, 138, 0.2) 50%, transparent 70%);
+    filter: blur(50px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.service-card-simple:hover .card-glow-blob {
+    opacity: 1;
+}
+
+/* Hidden target element for position calculation */
+.card-glow-target {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    pointer-events: none;
 }
 
 .service-card-simple .service-icon {
