@@ -2802,59 +2802,21 @@ body {
     padding: var(--space-xl);
     text-align: center;
     box-shadow: var(--shadow-soft);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100%;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(2, 62, 138, 0.08);
-}
-
-.service-card-simple:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-elevated);
-    border-color: rgba(9, 101, 198, 0.2);
-}
-
-/* Card inner wrapper for glow effect */
-.service-card-simple .card-inner {
-    position: relative;
-    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100%;
+    border: 1px solid transparent;
 }
 
-/* Mouse tracking glow blob */
-.card-glow-blob {
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(9, 101, 198, 0.35) 0%, rgba(2, 62, 138, 0.2) 50%, transparent 70%);
-    filter: blur(50px);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-}
-
-.service-card-simple:hover .card-glow-blob {
-    opacity: 1;
-}
-
-/* Hidden target element for position calculation */
-.card-glow-target {
-    position: absolute;
-    z-index: -1;
-    top: 0;
-    left: 0;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    pointer-events: none;
+.service-card-simple:hover {
+    transform: translateY(-8px);
+    box-shadow:
+        0 20px 40px rgba(2, 62, 138, 0.15),
+        0 0 0 1px rgba(9, 101, 198, 0.1),
+        0 0 30px rgba(9, 101, 198, 0.12);
+    border-color: rgba(9, 101, 198, 0.25);
 }
 
 .service-card-simple .service-icon {

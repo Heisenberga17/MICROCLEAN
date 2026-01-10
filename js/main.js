@@ -727,31 +727,6 @@
     animateCircles();
     */
 
-    // ==================== MOUSE TRACKING GLOW FOR SERVICE CARDS ====================
-    const glowCards = document.querySelectorAll('.service-card-simple');
-
-    if (glowCards.length > 0 && window.matchMedia('(hover: hover)').matches) {
-        glowCards.forEach(card => {
-            const blob = card.querySelector('.card-glow-blob');
-            const target = card.querySelector('.card-glow-target');
-
-            if (!blob || !target) return;
-
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left - 100; // Center the blob (200px / 2)
-                const y = e.clientY - rect.top - 100;
-
-                blob.animate([{
-                    transform: `translate(${x}px, ${y}px)`
-                }], {
-                    duration: 300,
-                    fill: 'forwards'
-                });
-            });
-        });
-    }
-
     // ==================== PAGE LOAD ANIMATION ====================
     window.addEventListener('load', () => {
         document.body.classList.add('loaded');
