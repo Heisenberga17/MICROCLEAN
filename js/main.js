@@ -454,19 +454,47 @@
         });
     }, observerOptions);
 
-    // Observe all sections and cards
+    // Observe all sections and cards with stagger support
     document.addEventListener('DOMContentLoaded', () => {
         const elementsToReveal = document.querySelectorAll(`
             .service-card,
+            .service-card-simple,
             .before-after-container,
             .contact-form,
             .contact-info,
             .about-content,
-            .section-header
+            .section-header,
+            .service-category-card,
+            .clean-category,
+            .process-step,
+            .included-item,
+            .event-type,
+            .modality-card,
+            .benefit-item,
+            .value-item,
+            .achievement-item,
+            .client-type,
+            .info-card,
+            .expect-step,
+            .faq-category
         `);
 
-        elementsToReveal.forEach(el => {
+        elementsToReveal.forEach((el) => {
             el.classList.add('scroll-reveal');
+
+            // Add stagger delay class based on siblings
+            const parent = el.parentElement;
+            if (parent) {
+                const siblings = Array.from(parent.children).filter(child =>
+                    child.classList.contains('scroll-reveal') ||
+                    child.matches('.service-card-simple, .clean-category, .process-step, .included-item, .event-type, .modality-card, .benefit-item, .value-item, .achievement-item, .client-type, .expect-step')
+                );
+                const siblingIndex = siblings.indexOf(el);
+                if (siblingIndex > 0 && siblingIndex <= 8) {
+                    el.classList.add(`stagger-${siblingIndex}`);
+                }
+            }
+
             scrollObserver.observe(el);
         });
     });
@@ -590,19 +618,65 @@
     });
 
     // ==================== ANIMATE NUMBERS ON SCROLL ====================
-    function animateValue(element, start, end, duration) {
+    function animateValue(element, start, end, duration, suffix = '') {
         let startTimestamp = null;
+        const isDecimal = end % 1 !== 0;
+
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const value = Math.floor(progress * (end - start) + start);
-            element.textContent = value.toLocaleString();
+            // Use easeOutExpo for more dramatic effect
+            const easeOutExpo = 1 - Math.pow(2, -10 * progress);
+            const value = start + (end - start) * easeOutExpo;
+
+            if (isDecimal) {
+                element.textContent = value.toFixed(1) + suffix;
+            } else {
+                element.textContent = Math.floor(value).toLocaleString() + suffix;
+            }
+
             if (progress < 1) {
                 window.requestAnimationFrame(step);
             }
         };
         window.requestAnimationFrame(step);
     }
+
+    // ==================== COUNTER ANIMATION OBSERVER ====================
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = counter.getAttribute('data-target');
+
+                if (target && !counter.classList.contains('counted')) {
+                    counter.classList.add('counted');
+
+                    // Parse the target value
+                    const numericValue = parseFloat(target);
+                    const text = counter.textContent;
+                    const suffix = text.replace(/[\d.,]/g, ''); // Get suffix like + or %
+
+                    // Animate from 0 to target
+                    animateValue(counter, 0, numericValue, 2000, suffix);
+                }
+
+                counterObserver.unobserve(counter);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    // Observe achievement numbers
+    document.addEventListener('DOMContentLoaded', () => {
+        const counters = document.querySelectorAll('.achievement-number[data-target]');
+        counters.forEach(counter => {
+            // Store original text and reset to 0
+            const originalText = counter.textContent;
+            const suffix = originalText.replace(/[\d.,]/g, '');
+            counter.textContent = '0' + suffix;
+            counterObserver.observe(counter);
+        });
+    });
 
     // ==================== CURSOR TRAIL EFFECT (OPTIONAL) ====================
     // Uncomment for premium cursor trail effect
