@@ -3718,10 +3718,14 @@ body {
 
 .info-card-landing {
     background: var(--white);
-    padding: var(--space-lg);
+    padding: var(--space-2xl);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-md);
     transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .info-card-landing:hover {
