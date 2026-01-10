@@ -3552,10 +3552,11 @@ body {
 .whatsapp-cta-box h3 {
     color: var(--gray-900);
     margin-bottom: var(--space-sm);
+    font-size: 1.5rem;
 }
 
 .whatsapp-number {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--whatsapp);
     margin-bottom: var(--space-md);
@@ -3736,13 +3737,15 @@ body {
 .info-card-landing h3 {
     color: var(--blue-1);
     margin-bottom: var(--space-sm);
-    font-size: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
 }
 
 .info-card-landing p {
     color: var(--gray-600);
-    font-size: 0.9375rem;
+    font-size: 1.0625rem;
     margin: 0;
+    line-height: 1.6;
 }
 
 /* ==================== FAQ PAGE ==================== */
