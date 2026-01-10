@@ -65,9 +65,19 @@
                     <img src="/public/images/MicroClean_Hero.png" alt="MicroClean Logo" class="logo" width="200" height="50" fetchpriority="high">
                 </a>
                 <nav class="nav-menu" aria-label="Navegación principal">
-                    <a href="/servicios/tapiceria.html" class="nav-link">Tapicería</a>
-                    <a href="/servicios/espacios.html" class="nav-link">Espacios</a>
-                    <a href="/servicios/eventos.html" class="nav-link">Eventos</a>
+                    <div class="nav-dropdown">
+                        <button class="nav-link nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true">
+                            Servicios
+                            <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="nav-dropdown-menu">
+                            <a href="/servicios/tapiceria.html" class="nav-dropdown-item">Tapicería y Textiles</a>
+                            <a href="/servicios/espacios.html" class="nav-dropdown-item">Limpieza de Espacios</a>
+                            <a href="/servicios/eventos.html" class="nav-dropdown-item">Limpieza de Eventos</a>
+                        </div>
+                    </div>
                     <a href="/nosotros.html" class="nav-link active">Nosotros</a>
                     <a href="/contacto.html" class="nav-link">Contacto</a>
                     <a href="/faq.html" class="nav-link">FAQ</a>

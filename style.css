@@ -236,6 +236,68 @@ header.scrolled {
     width: 100%;
 }
 
+/* Navigation Dropdown */
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+.nav-dropdown-toggle .dropdown-arrow {
+    transition: transform 0.2s;
+}
+
+.nav-dropdown:hover .dropdown-arrow,
+.nav-dropdown-toggle[aria-expanded="true"] .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 200px;
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-sm) 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s;
+    z-index: 1000;
+    margin-top: var(--space-sm);
+}
+
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown-toggle[aria-expanded="true"] + .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+}
+
+.nav-dropdown-item {
+    display: block;
+    padding: var(--space-sm) var(--space-lg);
+    color: var(--gray-700);
+    font-weight: 500;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.nav-dropdown-item:hover {
+    background: var(--gray-50);
+    color: var(--blue-2);
+}
+
 .btn-whatsapp-header {
     display: flex;
     align-items: center;
