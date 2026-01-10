@@ -7,33 +7,55 @@
   <!-- Homepage -->
   <url>
     <loc>https://microcleanpa.com/</loc>
-    <lastmod>2025-01-15</lastmod>
+    <lastmod>2026-01-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Services Section -->
+  <!-- Service Pages -->
   <url>
-    <loc>https://microcleanpa.com/#servicios</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://microcleanpa.com/servicios/tapiceria.html</loc>
+    <lastmod>2026-01-09</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
 
-  <!-- Gallery Section -->
   <url>
-    <loc>https://microcleanpa.com/#galeria</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://microcleanpa.com/servicios/espacios.html</loc>
+    <lastmod>2026-01-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://microcleanpa.com/servicios/eventos.html</loc>
+    <lastmod>2026-01-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- About Page -->
+  <url>
+    <loc>https://microcleanpa.com/nosotros.html</loc>
+    <lastmod>2026-01-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
-  <!-- Contact Section -->
+  <!-- Contact Page -->
   <url>
-    <loc>https://microcleanpa.com/#contacto</loc>
-    <lastmod>2025-01-15</lastmod>
+    <loc>https://microcleanpa.com/contacto.html</loc>
+    <lastmod>2026-01-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+
+  <!-- FAQ Page -->
+  <url>
+    <loc>https://microcleanpa.com/faq.html</loc>
+    <lastmod>2026-01-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
 
 </urlset>
